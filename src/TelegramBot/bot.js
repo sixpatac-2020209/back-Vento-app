@@ -11,7 +11,9 @@ const URI = `/webhook/${TOKEN}`;
 const WEBHOOK_URL = SERVER_URL + URI;
 
 const bot = new Telegraf(TOKEN, { polling: true });
-const { validateFile, validateName } = require('./utils/validate');
+const { validateFile } = require('./utils/validate');
+
+
 
 //////////////////// - VARIABLES DE COMANDOS - ////////////////////
 const confirm = 'confirm'
@@ -64,8 +66,9 @@ bot.on('sticker', (ctx=>{
 
 
 
-//---------------------------- REGISTROS ----------------------------//
 
+
+//---------------------------- REGISTROS ----------------------------//
 
 
 /*CLIENTE*/
@@ -101,7 +104,6 @@ bot.command('register', async (ctx) => {
 });
 
 
-
 /*VENDEDOR*/
 bot.command('idVendedor', async (ctx) => {
     try {
@@ -135,6 +137,8 @@ bot.command('idVendedor', async (ctx) => {
 
 
 //___________________________________________________________________//
+
+
 
 
 
@@ -174,6 +178,7 @@ bot.command(initBot, async (ctx) => {
                     let arrayChatVendedor = chatVendedor.recordsets;
                     let returnChatVendedor = arrayChatVendedor[0];
                     console.log(returnChatVendedor);
+                    
                     bot.telegram.sendDocument(returnChatVendedor, fileId, documentPath);
                     bot.telegram.sendMessage(returnChatVendedor, `Documento: ${documentName}.\nEmpresa: ${documentCap}\nEnviado por ${ctx.from.first_name} ${ctx.from.last_name} id a enviar con /confirmCliente :`);
                     bot.telegram.sendMessage(returnChatVendedor, message_IDClient);
@@ -229,7 +234,6 @@ bot.command(confirmCliente, async (ctx) => {
 });
 
 
-
 bot.command('enviarSAE', async (ctx) => {
     let userId = ctx.chat.id
     let userIdString = userId.toString();
@@ -260,6 +264,7 @@ bot.command('enviarSAE', async (ctx) => {
 
 
 //___________________________________________________________________//
+
 
 
 
@@ -323,9 +328,12 @@ bot.command('sendDB', (ctx) => {
     }
 });
 
+
 //___________________________________________________________________//
 
+
 bot.launch();
+
 
 exports.init = async () => {
     const res = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`)
