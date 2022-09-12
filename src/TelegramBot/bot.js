@@ -38,6 +38,30 @@ bot.on('photo', async (ctx) => {
     ctx.reply('Solo se aceptan documentos .pdf o .xlsx (excel)');
 });
 
+bot.on('document', async (ctx) => {
+    let fileURL = await bot.telegram.getFileLink(ctx.update.message.document.file_id);
+    let fileExtention = fileURL.pathname.split('.');
+    const verificExtention = await validateFile(fileExtention[1]);
+
+    if (verificExtention === true) {
+        ctx.reply('Por favor, sigue los pasos para procesar tu pedido.');
+    } else {
+        ctx.reply('El archivo enviado no es valido');
+    }
+})
+
+bot.on('video', (ctx=>{
+    ctx.reply('Mensaje no apropiado para este bot')
+}));
+
+bot.on('voice', (ctx=>{
+    ctx.reply('Mensaje no apropiado para este bot')
+}));
+
+bot.on('sticker', (ctx=>{
+    ctx.reply('Mensaje no apropiado para este bot')
+}));
+
 
 
 //---------------------------- REGISTROS ----------------------------//
