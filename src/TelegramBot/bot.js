@@ -3,6 +3,7 @@ const { Telegraf } = require('telegraf');
 const { Dotenv } = require('dotenv').config();
 const axios = require('axios');
 const sqlConfig = require('../../configs/sqlConfig');
+const { vendedorExist, clienteExist, } = require('./middlewares/authenticated');
 
 const { TOKEN, SERVER_URL } = process.env
 const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
@@ -58,12 +59,9 @@ bot.command('register', async (ctx) => {
         let nombreCliente = ctx.from.first_name;
         let apellidoCliente = ctx.from.last_name;
 
-        let validateCliente = await sqlConfig.dbconnection.query(`SELECT nombreCliente FROM telegramClientes WHERE idGroup = '${idGroup}'`);
-        let arrayCliente = validateCliente.recordsets;
-        let returnCliente = arrayCliente[0];
-
-        if (returnCliente == "" || returnCliente == undefined) {
-            let newCliente = await sqlConfig.dbconnection.query(`INSERT INTO telegramClientes VALUES ('${idGroup}', '${nombreCliente}', '${apellidoCliente}')`);
+        let existCliente = await clienteExist(idGroup);
+        if (existCliente == '' || existCliente === [] || existCliente === undefined) {
+            let newCliente = await sqlConfig.dbconnection.query(`INSERT INTO Clientees VALUES ('${idGroup}', '${nombreCliente}', '${apellidoCliente}')`);
             let arrayNewCliente = newCliente.recordsets;
             let returnNewCliente = arrayNewCliente[0];
 
@@ -75,11 +73,13 @@ bot.command('register', async (ctx) => {
             }
 
         } else {
-            ctx.reply('Cliente registrado Anteriormente');
+            ctx.reply('Cliente registrado anteriormente');
+
         }
+
     } catch (err) {
         console.log(err);
-        ctx.reply('Error al guardar el cliente')
+        ctx.reply('Error al guardar el Cliente')
     }
 });
 
@@ -91,10 +91,8 @@ bot.command('idVendedor', async (ctx) => {
         let nombreVendedor = ctx.from.first_name;
         let apellidoVendedor = ctx.from.last_name;
 
-        let validateVendedor = await sqlConfig.dbconnection.query(`SELECT nombreVendedor FROM vendedores WHERE idGroup = '${idGroup}'`);
-        let arrayVendedor = validateVendedor.recordsets;
-        let returnVendedor = arrayVendedor[0];
-        if (returnVendedor == "" || returnVendedor == undefined) {
+        let existVendedor = await vendedorExist(idGroup);
+        if (existVendedor == '' || existVendedor === [] || existVendedor === undefined) {
             let newVendedor = await sqlConfig.dbconnection.query(`INSERT INTO vendedores VALUES ('${idGroup}', '${nombreVendedor}', '${apellidoVendedor}')`);
             let arrayNewVendedor = newVendedor.recordsets;
             let returnNewVendedor = arrayNewVendedor[0];
@@ -108,7 +106,9 @@ bot.command('idVendedor', async (ctx) => {
 
         } else {
             ctx.reply('Vendedor registrado Anteriormente');
+
         }
+
     } catch (err) {
         console.log(err);
         ctx.reply('Error al guardar el Vendedor')
@@ -125,65 +125,58 @@ bot.command('idVendedor', async (ctx) => {
 //---------------------------- CLIENTE ----------------------------//
 
 
-bot.command('initBot', async(ctx) => {
-    let userId = ctx.chat.id;
-    let cliente = await sqlConfig.dbconnection.query(`SELECT nombreCliente, apellidoCliente FROM telegramClientes WHERE idGroup = '${userId}'`);
-    let arrayCliente = cliente.recordsets;
-    let returnCliente = arrayCliente[0];
-    if (!returnCliente || returnCliente === [] || returnCliente === undefined || returnCliente == '') {
+bot.command('iniciarPedido', async (ctx) => {
+    let idGroup = ctx.chat.id;
+    let cliente = await clienteExist(idGroup);
+    if (!cliente || cliente === [] || cliente === undefined || cliente == '') {
         ctx.reply('Comnando no autorizado');
     } else {
-        if (!returnCliente || returnCliente === [] || returnCliente === undefined || returnCliente == '') {
-            ctx.reply('Comando no autorizado')
-        } else {
-            ctx.reply('Envie su pedido');
-            bot.on('document', async (ctx) => {
-                let fileURL = await bot.telegram.getFileLink(ctx.update.message.document.file_id);
-                let fileExtention = fileURL.pathname.split('.');
-                const verificExtention = await validateFile(fileExtention[1]);
 
-                let fileId = ctx.message.document.file_id
-                let documentPath = fileURL.pathname;
-                let documentName = ctx.message.document.file_name;
-                let documentCaption = ctx.message.caption;
+        ctx.reply('Envie su pedido');
+        bot.on('document', async (ctx) => {
+            let fileURL = await bot.telegram.getFileLink(ctx.update.message.document.file_id);
+            let fileExtention = fileURL.pathname.split('.');
+            const verificExtention = await validateFile(fileExtention[1]);
 
-                if (verificExtention === true) {
-                    ctx.reply('Envia el nombre del vendedor');
+            let fileId = ctx.message.document.file_id
+            let documentPath = fileURL.pathname;
+            let documentName = ctx.message.document.file_name;
+            let documentCaption = ctx.message.caption;
 
-                    bot.on('text', async (ctx) => {
-                        let Vendedor = ctx.message.text;
-                        let splitVendedor = Vendedor.split(' ');
-                        let nombreVendedor = splitVendedor[0];
-                        let apellidoVendedor = splitVendedor[1];
+            if (verificExtention === true) {
+                ctx.reply('Envia el nombre del vendedor');
 
-                        let chatVendedor = await sqlConfig.dbconnection.query(`SELECT  idGroup FROM vendedores WHERE nombreVendedor='${nombreVendedor}' and apellidoVendedor='${apellidoVendedor}'`);
-                        let arrayChatVendedor = chatVendedor.recordsets;
-                        let returnChatVendedor = arrayChatVendedor[0];
+                bot.on('text', async (ctx) => {
+                    let Vendedor = ctx.message.text;
+                    let splitVendedor = Vendedor.split(' ');
+                    let nombreVendedor = splitVendedor[0];
+                    let apellidoVendedor = splitVendedor[1];
 
-                        let idChat = []
-                        let array = returnChatVendedor;
-                        for (item of array) {
-                            idChat.push(item.idGroup);
-                        }
-                        let idChatString = idChat.toString();
+                    let chatVendedor = await sqlConfig.dbconnection.query(`SELECT idGroup FROM vendedores WHERE nombreVendedor='${nombreVendedor}' and apellidoVendedor='${apellidoVendedor}'`);
+                    let arrayChatVendedor = chatVendedor.recordsets;
+                    let returnChatVendedor = arrayChatVendedor[0];
+
+                    let idChat = []
+                    let array = returnChatVendedor;
+                    for (item of array) {
+                        idChat.push(item.idGroup);
+                    }
+                    let idChatString = idChat.toString();
 
 
-                        bot.telegram.sendDocument(idChatString, fileId, documentPath);
-                        bot.telegram.sendMessage(idChatString, `Documento: ${documentName}.\nEmpresa: ${documentCaption}\nEnviado por ${ctx.from.first_name} ${ctx.from.last_name}`);
+                    bot.telegram.sendDocument(idChatString, fileId, documentPath);
+                    bot.telegram.sendMessage(idChatString, `Documento: ${documentName}.\nEmpresa: ${documentCaption}\nEnviado por ${ctx.from.first_name} ${ctx.from.last_name}`);
 
-                        ctx.reply('Se ha confirmado tu pedido' + '\n'
-                            + 'Por favor espera la confirmación de nuestro encargado.'
-                        );
-                    });
+                    ctx.reply('Se ha confirmado tu pedido' + '\n'
+                        + 'Por favor espera la confirmación de nuestro encargado.'
+                    );
+                });
 
-                } else {
-                    ctx.reply('El archivo enviado no es valido');
-                }
-            });
-        }
-
+            } else {
+                ctx.reply('El archivo enviado no es valido');
+            }
+        });
     }
-
 });
 
 
@@ -234,20 +227,18 @@ bot.command('confirmCliente', async (ctx) => {
 
 
 bot.command('enviarSAE', async (ctx) => {
-    let userId = ctx.chat.id
-    let userIdString = userId.toString();
+    let idGroup = ctx.chat.id;
 
-    let validateUser = await sqlConfig.dbconnection.query(`SELECT nombreVendedor, apellidoVendedor FROM vendedores WHERE idGroup = '${userIdString}'`);
-    let arrayVendedor = validateUser.recordsets;
-    let returnVendedor = arrayVendedor[0];
+    let existVendedor = await vendedorExist(idGroup);
+
     let idChat = []
-    let array = returnVendedor;
+    let array = existVendedor;
     for (item of array) {
         idChat.push(item.nombreVendedor + ' ' + item.apellidoVendedor);
     }
-    let vendedortring = idChat.toString();
+    let vendedorString = idChat.toString();
 
-    if (!returnVendedor || returnVendedor === [] || returnVendedor === undefined || returnVendedor == '') {
+    if (!existVendedor || existVendedor === [] || existVendedor === undefined || existVendedor == '') {
         ctx.reply('Comando no autorizado');
     } else {
         ctx.reply('Envia el documento SAE');
@@ -263,7 +254,7 @@ bot.command('enviarSAE', async (ctx) => {
             if (verificExtention === true) {
                 let groupId = '1908891995';
                 bot.telegram.sendDocument(groupId, fileId, documentPath);
-                bot.telegram.sendMessage(groupId, `Documento: ${file_name} , enviado por ${vendedortring}`)
+                bot.telegram.sendMessage(groupId, `Documento: ${file_name} , enviado por ${vendedorString}`)
                 ctx.reply('documento enviado satisfactoriamente');
             } else {
                 ctx.reply('El archivo enviado no es valido');
@@ -284,7 +275,7 @@ bot.command('enviarSAE', async (ctx) => {
 //---------------------------- JEFE ----------------------------//
 
 
-bot.command("sendDB", (ctx) => {
+bot.command("enviarDB", (ctx) => {
     let chatIdConf = ctx.chat.id;
     let chatIdString = chatIdConf.toString()
     if (chatIdConf === 1908891995 || chatIdString === '1908891995') {
@@ -406,10 +397,11 @@ bot.command("confirm", (ctx) => {
 
 bot.launch();
 
-process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
 exports.init = async () => {
     const res = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`)
     console.log('TelegramBot | In function.');
 };
+
