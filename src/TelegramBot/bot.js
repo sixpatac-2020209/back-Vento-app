@@ -134,7 +134,7 @@ bot.command('iniciarPedido', async (ctx) => {
             let fileURL = await bot.telegram.getFileLink(ctx.update.message.document.file_id);
             let fileExtention = fileURL.pathname.split('.');
             const verificExtention = await validateFile(fileExtention[1]);
-
+            console.log(fileURL);
             let fileId = ctx.message.document.file_id
             let documentPath = fileURL.pathname;
             let documentName = ctx.message.document.file_name;
@@ -374,14 +374,12 @@ bot.command("confirm", (ctx) => {
 //___________________________________________________________________//
 
 
-bot.hears('stop', ctx =>{
-    setInterval(() => {
-        bot.stop(() => {
-          bot.launch({ polling: { timeout: 1 } })
-        })
-    }, 2000);
+bot.hears('reset', ctx => {
+    bot.stop(() => { });
     console.log('se detuvo el bot');
-})
+    bot.launch({ polling: { timeout: 1 } });
+    console.log('se inició el bot');
+});
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
@@ -395,7 +393,5 @@ bot.catch((err) => {
 exports.init = async () => {
     const res = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`)
     console.log('TelegramBot | In function.');
+    bot.launch();
 };
-
-
-bot.launch();
