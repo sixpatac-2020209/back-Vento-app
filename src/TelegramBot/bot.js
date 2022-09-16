@@ -1,17 +1,18 @@
 'USE STRICT'
 const { Telegraf, Session } = require('telegraf');
 const { Dotenv } = require('dotenv').config();
+const { vendedorExist, clienteExist, } = require('./middlewares/authenticated');
+const { TOKEN, SERVER_URL } = process.env;
+const { validateFile } = require('./utils/validate');
+
 const axios = require('axios');
 const sqlConfig = require('../../configs/sqlConfig');
-const { vendedorExist, clienteExist, } = require('./middlewares/authenticated');
-const { TOKEN, SERVER_URL } = process.env
 const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
 const URI = `/webhook/${TOKEN}`;
 const WEBHOOK_URL = SERVER_URL + URI;
 
 const bot = new Telegraf(TOKEN);
 
-const { validateFile } = require('./utils/validate');
 
 bot.start((ctx) => {
 
@@ -22,29 +23,31 @@ bot.start((ctx) => {
     );
 });
 
+
 bot.help((ctx) => {
     ctx.reply('Este es un bot de prueba para VENTO.' + '\n');
 });
+
 
 bot.on('photo', async (ctx) => {
     ctx.reply('Has enviado una imagen o foto');
     ctx.reply('Solo se aceptan documentos .pdf o .xlsx (excel)');
 });
 
+
 bot.on('video', (ctx => {
     ctx.reply('Mensaje no apropiado para este bot')
 }));
+
 
 bot.on('voice', (ctx => {
     ctx.reply('Mensaje no apropiado para este bot')
 }));
 
+
 bot.on('sticker', (ctx => {
     ctx.reply('Mensaje no apropiado para este bot')
 }));
-
-
-
 
 
 //---------------------------- REGISTROS ----------------------------//
@@ -130,7 +133,7 @@ bot.command('iniciarPedido', async (ctx) => {
         ctx.reply('Comnando no autorizado');
     } else {
         ctx.reply('Envie su pedido');
-        process.once(bot.on('document', async (ctx) => {
+        bot.on('document', async (ctx) => {
             let fileURL = await bot.telegram.getFileLink(ctx.update.message.document.file_id);
             let fileExtention = fileURL.pathname.split('.');
             const verificExtention = await validateFile(fileExtention[1]);
@@ -171,9 +174,10 @@ bot.command('iniciarPedido', async (ctx) => {
             } else {
                 ctx.reply('El archivo enviado no es valido');
             }
-        }), () => bot.stop(bot.on));
+        });
     }
 });
+
 
 //___________________________________________________________________//
 
@@ -268,6 +272,54 @@ bot.command('enviarSAE', async (ctx) => {
 
 
 //---------------------------- JEFE ----------------------------//
+
+bot.command('correcciónSAE', ctx => {
+    chatId = ctx.chat.id
+    let chatIdConf = ctx.chat.id;
+    let chatIdString = chatIdConf.toString()
+    if (chatIdConf === 1908891995 || chatIdString === '1908891995') {
+        bot.on('document', async (ctx) => {
+            let fileURL = await bot.telegram.getFileLink(ctx.update.message.document.file_id);
+            let fileExtention = fileURL.pathname.split('.');
+            const verificExtention = await validateFile(fileExtention[1]);
+            console.log(fileURL);
+            let fileId = ctx.message.document.file_id
+            let documentPath = fileURL.pathname;
+            let documentName = ctx.message.document.file_name;
+            let documentCaption = ctx.message.caption;
+
+            if (verificExtention === true) {
+                ctx.reply('Envia el nombre del vendedor');
+
+                bot.on('text', async (ctx) => {
+                    let Vendedor = ctx.message.text;
+                    let splitVendedor = Vendedor.split(' ');
+                    let nombreVendedor = splitVendedor[0];
+                    let apellidoVendedor = splitVendedor[1];
+
+                    let chatVendedor = await sqlConfig.dbconnection.query(`SELECT idGroup FROM vendedores WHERE nombreVendedor='${nombreVendedor}' and apellidoVendedor='${apellidoVendedor}'`);
+                    let arrayChatVendedor = chatVendedor.recordsets;
+                    let returnChatVendedor = arrayChatVendedor[0];
+
+                    let idChat = []
+                    let array = returnChatVendedor;
+                    for (item of array) {
+                        idChat.push(item.idGroup);
+                    }
+                    let idChatString = idChat.toString();
+
+                    bot.telegram.sendDocument(idChatString, fileId, documentPath);
+                    bot.telegram.sendMessage(idChatString, `Documento: ${documentName}.\nCorrecciones: ${documentCaption}`);
+                    ctx.reply(`Mensaje enviado a  ${nombreVendedor} ${apellidoVendedor}`);
+                });
+            } else {
+                ctx.reply('El archivo enviado no es valido');
+            }
+        });
+    } else{
+        ctx.reply('Comando no autorizado')
+    }
+});
 
 
 bot.command("enviarDB", (ctx) => {
@@ -371,6 +423,7 @@ bot.command("confirm", (ctx) => {
     }
 });
 
+
 //___________________________________________________________________//
 
 
@@ -383,12 +436,6 @@ bot.hears('reset', ctx => {
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
-
-bot.catch((err) => {
-    console.error('Ooops', err);
-    process.exit(1);
-});
-
 
 exports.init = async () => {
     const res = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`)
