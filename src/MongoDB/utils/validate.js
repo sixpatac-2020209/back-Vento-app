@@ -1,7 +1,7 @@
 'use strict'
 
 const bcrypt = require('bcrypt-nodejs');
-const User = require('../MongoDB/models/usuario.model');
+const User = require('../models/usuario.model');
 
 exports.validateData = (data) =>
 {

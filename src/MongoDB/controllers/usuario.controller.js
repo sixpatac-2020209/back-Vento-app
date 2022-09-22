@@ -3,7 +3,7 @@
 const User = require('../models/usuario.model');
 const {validateData, encrypt, alreadyUser, 
     checkPassword, checkUpdate, checkPermission,
-    checkUpdateAdmin} = require('../../utils/validate');
+    checkUpdateAdmin} = require('../utils/validate');
 
 //FUNCIONES PÚBLICAS
 exports.userTest = async (req, res)=>{

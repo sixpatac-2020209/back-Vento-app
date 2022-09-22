@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 //Función - Conexión con MongoDB
 exports.init = ()=>
 {
-    const uriMongo = 'mongodb://127.0.0.1:27017/PruebasVENTO';
+    const uriMongo = 'mongodb+srv://sduardS:123@cluster0.ighdrss.mongodb.net/?retryWrites=true&w=majority';
 
     //Promesa de Mongo
     mongoose.Promise = global.Promise;

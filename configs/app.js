@@ -1,10 +1,14 @@
 'use strict'
 
+const {encrypt} = require('../src/MongoDB/utils/validate');
+
+//Importación del Modelo de Usuario//
+const User = require('../src/MongoDB/models/usuario.model');
+
 const bodyParser = require('body-parser');
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
-const telegramBot = require('../src/TelegramBot/bot')
 
 const port = 3200 || process.env.PORT;
 ////////////////////////////////////////////
@@ -27,5 +31,22 @@ app.use('/clientes', clienteRoutes);
 
 ////////////////////////////////////////////
 exports.initServer = () => app.listen(port, async () => {
+    const automaticUser = {
+        username: 'SuperAdmin',
+        email: 'admin@vento.com.gt',
+        name: 'SuperAdmin',
+        surname: 'SuperAdmin',
+        phone: 'SuperAdmin',
+        password: await encrypt('123'),
+        role: 'ADMINISTRADOR'
+    }
+
+    const searchUserAdmin = await User.findOne({username: automaticUser.username})
+    if(!searchUserAdmin) {
+        let userAdmin = new User(automaticUser);
+        await userAdmin.save();
+        console.log('Administrador General creado correctamente.')
+    }
+
     console.log(`API | Listening on port ${port}.`)
 });
