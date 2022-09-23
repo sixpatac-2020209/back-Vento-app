@@ -15,6 +15,8 @@ const port = 3200 || process.env.PORT;
 
 const userRoutes = require('../src/MongoDB/routes/usuario.routes');
 const clienteRoutes = require('../src/SQL/routes/tbl_clientes.routes');
+const pedidoRoutes = require('../src/SQL/routes/pedidos.routes')
+
 
 ////////////////////////////////////////////
 
@@ -28,6 +30,7 @@ app.use(cors());
 
 app.use('/user', userRoutes);
 app.use('/clientes', clienteRoutes);
+app.use('/pedidos', pedidoRoutes)
 
 ////////////////////////////////////////////
 exports.initServer = () => app.listen(port, async () => {

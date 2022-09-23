@@ -37,7 +37,7 @@ exports.login = async(req, res)=>{
 //FUNCIONES PRIVADAS -- Admin --
 
 exports.addUser = async (req, res) =>{
-
+    
 };
 
 exports.updateUser = async (req, res) =>{
@@ -85,7 +85,6 @@ exports.AtoZsurnameUser = async(req, res)=>{
         return res.status(500).send({ message: 'Error getting Users.', err});
     }
 }
-
 
 exports.ZtosurnameAUser = async(req, res)=>
 {
