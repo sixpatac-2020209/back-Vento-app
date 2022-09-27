@@ -7,8 +7,8 @@ const api = express.Router();
 api.get('/pedidosTest', pedidosController.pedidosTest);
 
 // Admin
-api.post('/getPedidos', pedidosController.getPedidos);
-api.post('/getPedidoPorAño', pedidosController.getPedidosPorAño);
+api.get('/getPedidos', pedidosController.getPedidos);
+api.post('/getPedidoPorAnio', pedidosController.getPedidosPorAño);
 api.post('/getPedidosPorMes', pedidosController.getPedidosPorMes);
 api.post('/savePedido', pedidosController.savePedidos);
 api.post('/updatePedido/:id', pedidosController.updatePedido);

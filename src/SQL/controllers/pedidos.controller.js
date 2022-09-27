@@ -10,7 +10,7 @@ exports.pedidosTest = async (req, res) => {
 exports.getPedidos = async (req, res) => {
     try {
         let Pedidos = await sqlConfig.dbconnection.query(`
-        SELECT F.CVE_DOC,P.CVE_ART,I.DESCR,F.CVE_CLPV,C.NOMBRE,V.NOMBRE FROM FACTP02 F 
+        SELECT F.CVE_DOC,P.CVE_ART,I.DESCR,F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE FROM FACTP02 F 
         INNER JOIN PAR_FACTP02 P ON P.CVE_DOC = F.CVE_DOC 
         INNER JOIN INVE02 I ON P.CVE_ART=I.CVE_ART
         INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
@@ -18,6 +18,8 @@ exports.getPedidos = async (req, res) => {
 
         let arrayPedidos = Pedidos.recordsets;
         let returnPedidos = arrayPedidos[0];
+        let returnPedidosI = returnPedidos[0];
+        console.log(returnPedidosI.CVE_DOC);
 
         if (!returnPedidos) {
             return res.status(400).send({ message: 'Pedidos no encontrados' });
@@ -177,13 +179,14 @@ exports.getPedido = async (req, res) => {
         INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
         INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
         WHERE RTRIM(LTRIM(F.CVE_DOC))='${id}'`);
-        let arrayPedido = Pedido.recordsets
+        let arrayPedido = Pedido.recordsets[0]
         let returnPedido = arrayPedido[0];
-        if (!Pedido) {
-            return res.status(400).send({ message: 'Clientes no encontrados' })
+
+        if (returnPedido.length === 0) {
+            return res.status(400).send({ message: 'Pedido no encontrado' });
         }
         else {
-            return res.send({ returnPedido });
+            return res.send({ message: 'Pedido encontrado', returnPedido });
         }
     } catch (err) {
         console.log(err);
