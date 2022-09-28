@@ -10,7 +10,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 
-const port = 3200 || process.env.PORT;
+const port = process.env.PORT || 3200 ;
 ////////////////////////////////////////////
 
 const userRoutes = require('../src/MongoDB/routes/usuario.routes');

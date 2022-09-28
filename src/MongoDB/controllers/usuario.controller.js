@@ -60,8 +60,8 @@ exports.addUser = async (req, res) => {
             } else {
                 return res.send({ message: 'Usuario agregadó anteriormente' });
             }
-        } else{
-            return res.send({message: 'Rol no autorizado'})
+        } else {
+            return res.send({ message: 'Rol no autorizado' })
         }
     } catch (err) {
         console.log(err);
@@ -109,6 +109,31 @@ exports.deleteUser = async (req, res) => {
 };
 
 
+exports.getUser = async (req, res) => {
+    try {
+        const userID = req.params.id;
+        const user = await User.findOne({ _id: userID })
+        if (user)
+            return res.send({ message: 'Usuario Encontrado:', user })
+        return res.status(400).send({ message: 'Usuario no Encontrado.' })
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ err, message: 'Error Al Obtener al Usuario.' });
+    }
+}
+
+
+exports.getUsers = async (req, res) => {
+    try {
+        const users = await User.find();
+        if (users.length == 0)
+            return res.send({ message: 'Aún no existen usuarios.' })
+        return res.send({ message: 'Usuarios encontrados:', users })
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ message: 'Error obteniendo los usuarios.' });
+    }
+}
 
 
 

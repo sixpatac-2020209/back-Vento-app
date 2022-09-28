@@ -18,9 +18,6 @@ exports.getPedidos = async (req, res) => {
 
         let arrayPedidos = Pedidos.recordsets;
         let returnPedidos = arrayPedidos[0];
-        let returnPedidosI = returnPedidos[0];
-        console.log(returnPedidosI.CVE_DOC);
-
         if (!returnPedidos) {
             return res.status(400).send({ message: 'Pedidos no encontrados' });
         } else {
@@ -77,7 +74,6 @@ exports.getPedidosPorMes = async (req, res) => {
 
         let arrayPedidos = Pedidos.recordsets
         let returnPedidos = arrayPedidos[0];
-
         if (!Pedidos) {
             return res.status(400).send({ message: 'Clientes no encontrados' })
         }
@@ -190,6 +186,6 @@ exports.getPedido = async (req, res) => {
         }
     } catch (err) {
         console.log(err);
-        return res.status(500).sed({ message: 'Error al obtener el pedido', err })
+        return res.status(500).send({ message: 'Error al obtener el pedido', err })
     }
 };

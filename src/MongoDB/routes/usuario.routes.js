@@ -6,6 +6,9 @@ const api = express.Router();
 
 //Rutas Públicas//
 api.get('/testUser', userController.userTest);
-api.post('/login', userController.login)
+api.get('/getUsers', userController.getUsers);
+api.get('/getUser/:id', userController.getUser);
+
+api.post('/login', userController.login);
 
 module.exports = api;

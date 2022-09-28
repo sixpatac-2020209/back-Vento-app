@@ -17,7 +17,7 @@ api.delete('/deletePedido/:id', pedidosController.deletePedido );
 // Vendedor
 api.post('/getPedidosPorCliente', pedidosController.getPedidosPorCliente);
 api.post('/guardarPedido', pedidosController.guardarPedido);
-api.post('/editarPedido/:id', pedidosController.editarPedido);
+api.get('/editarPedido/:id', pedidosController.editarPedido);
 api.post('/getDetallePedido',pedidosController.getDetallePedido);
 
 api.get('/getPedido/:id', pedidosController.getPedido);
