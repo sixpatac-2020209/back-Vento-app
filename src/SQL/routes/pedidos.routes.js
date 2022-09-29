@@ -22,5 +22,4 @@ api.post('/getDetallePedido',pedidosController.getDetallePedido);
 
 api.get('/getPedido/:id', pedidosController.getPedido);
 
-
 module.exports = api

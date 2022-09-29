@@ -11,6 +11,6 @@ api.get('/getClientes', clienteController.getClientes);
 
 api.get('/getClientesVendedor', clienteController.getClientesVendedor);
 
-api.get('/getCliente', clienteController.getCliente);
+api.get('/getCliente/:id', clienteController.getCliente);
 
 module.exports = api;

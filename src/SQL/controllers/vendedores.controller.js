@@ -15,8 +15,7 @@ exports.getVendedores = async (req, res) => {
 
         if (!returnVendedores) {
             return res.status(400).send({ message: 'Clientes no encontrados' })
-        }
-        else {
+        } else {
             return res.send({ returnVendedores });
         }
 
@@ -31,15 +30,16 @@ exports.getVendedor = async (req, res) => {
         let id = req.params.id;
         let vendedor = await sqlConfig.dbconnection.query(`SELECT * FROM VEND02 WHERE RTRIM(LTRIM(CVE_VEND)) = ${id}`);
         let arrayVendedor = vendedor.recordsets;
-        let returnVendedor = arrayVendedor[0];
+        let secondArray = arrayVendedor[0];
+        let returnVendedor = secondArray[0];
+
         if (!vendedor) {
-            return res.status(400).send({ message: 'Vendedor no encontrados' })
-        }
-        else {
+            return res.status(400).send({ message: 'Vendedor no encontrado' })
+        } else {
             if (returnVendedor.length === 0) {
-                return res.status(400).send({ message: 'Cliente no encontrado' });
+                return res.status(400).send({ message: 'Vendedor no encontrado' });
             } else {
-                return res.send({ message: 'Vendedor encontrado', returnVendedor });
+                return res.send({ message: 'Vendedor encontrado', returnVendedor, });
             }
         }
 
@@ -68,14 +68,13 @@ exports.addVendedor = async (req, res) => {
             '${data.CLASIFIC}', 
             '${data.CORREOE}'
             )`);
-        
+
         let arrayNewVendedor = newVendedor.recordsets;
-        let returnNewVendedor = arrayNewVendedor[0]; 
+        let returnNewVendedor = arrayNewVendedor[0];
 
         if (!returnNewVendedor) {
-            return res.status(400).send({ message: 'Vendedor no creado'})
-        }
-        else {
+            return res.status(400).send({ message: 'Vendedor no creado' })
+        } else {
             return res.send({ message: 'Vendedor agregado satisfactoriamente', returnNewVendedor });
         }
     } catch (err) {
@@ -96,7 +95,7 @@ exports.updateVendedor = async (req, res) => {
             CORREOE: params.CORREOE,
         }
 
-        const updatedVendedor = await dbConfig.dbconnection.query( `UPDATE vendedores Set 
+        const updatedVendedor = await dbConfig.dbconnection.query(`UPDATE vendedores Set 
             STATUS = '${data.STATUS}', 
             NOMBRE = '${data.NOMBRE}', 
             COMI = '${data.COMI}', 
@@ -107,9 +106,8 @@ exports.updateVendedor = async (req, res) => {
         let arrayVendedorUpsated = updatedVendedor.recordsets
         let returnVendedorUpdated = arrayVendedorUpsated[0]
         if (!updatedVendedor) {
-            return res.status(400).send({ message: 'Vendedor no actualizado'})
-        }
-        else {
+            return res.status(400).send({ message: 'Vendedor no actualizado' })
+        } else {
             return res.send({ message: 'Vendedor acatualizado satisfactoriamente', returnVendedorUpdated });
         }
     }
@@ -125,8 +123,7 @@ exports.deleteVendedor = async (req, res) => {
         const vendedor = await dbConfig.dbconnection.query(`DELETE FROM VEND02 WHERE RTRIM(LTRIM(CVE_VEND)) = ${vendedorId}`);
         if (!vendedor) {
             return res.status(400).send({ message: 'Vendedor no eliminiado' })
-        }
-        else {
+        } else {
             return res.send({ message: 'Vendedor vendedor eliminado', vendedor });
         }
     } catch (err) {

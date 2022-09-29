@@ -169,14 +169,15 @@ exports.getPedido = async (req, res) => {
     try {
         let id = req.params.id;
         let Pedido = await sqlConfig.dbconnection.query(`
-        SELECT F.CVE_DOC,P.CANT, P.CVE_ART, P.TOT_PARTIDA, F.FECHAELAB, F.CVE_VEND, V.NOMBRE, F.CVE_CLPV, C.NOMBRE FROM FACTP02 F 
+        SELECT F.CVE_DOC, P.CANT, P.CVE_ART, P.TOT_PARTIDA, F.FECHAELAB, F.CVE_VEND, V.NOMBRE, F.CVE_CLPV, C.NOMBRE FROM FACTP02 F 
         INNER JOIN PAR_FACTP02 P ON P.CVE_DOC = F.CVE_DOC 
         INNER JOIN INVE02 I ON P.CVE_ART=I.CVE_ART
         INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
         INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
-        WHERE RTRIM(LTRIM(F.CVE_DOC))='${id}'`);
-        let arrayPedido = Pedido.recordsets[0]
-        let returnPedido = arrayPedido[0];
+        WHERE F.CVE_DOC='${id}'`);
+        let arrayPedido = Pedido.recordsets
+        let secondArray = arrayPedido[0];
+        let returnPedido = secondArray[0];
 
         if (returnPedido.length === 0) {
             return res.status(400).send({ message: 'Pedido no encontrado' });

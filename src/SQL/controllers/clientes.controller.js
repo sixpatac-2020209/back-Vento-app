@@ -17,7 +17,7 @@ exports.getClientes = async (req, res) => {
             return res.status(400).send({ message: 'Clientes no encontrados' })
         }
         else {
-            return res.send({returnClientes});
+            return res.send({ returnClientes });
         }
 
     } catch (err) {
@@ -38,7 +38,7 @@ exports.getClientesVendedor = async (req, res) => {
             return res.status(400).send({ message: 'Clientes no encontrados' })
         }
         else {
-            return res.send({returnClientes});
+            return res.send({ returnClientes });
         }
 
     } catch (err) {
@@ -50,12 +50,15 @@ exports.getClientesVendedor = async (req, res) => {
 ////GLOBAL
 exports.getCliente = async (req, res) => {
     try {
-        const dataCliente = req.body.clave;
-        const cliente = await sqlConfig.dbconnection.query(`SELECT * FROM CLIE02 WHERE RTRIM(LTRIM(CLAVE))='${dataCliente}'`);
-        let clienteEncontrado = cliente.recordsets[0]
-            if (clienteEncontrado.length === 0) {
-                return res.status(400).send({ message: 'Cliente no encontrado' });
-            }
+        const dataCliente = req.params.id;
+        const cliente = await sqlConfig.dbconnection.query(`SELECT * FROM CLIE02 WHERE CLAVE='${dataCliente}'`);
+        let arrayCliente = cliente.recordsets
+        let secondArray = arrayCliente[0]
+        let clienteEncontrado = secondArray[0]
+
+        if (clienteEncontrado.length === 0) {
+            return res.status(400).send({ message: 'Cliente no encontrado' });
+        }
         else {
             return res.send({ message: 'Cliente encontrado', clienteEncontrado });
         }
@@ -65,3 +68,32 @@ exports.getCliente = async (req, res) => {
         return res.status(500).send({ message: 'Error al obtener el cliente', err });
     }
 }
+
+exports.getClientePipeId = async (req, res) => {
+    try {
+        let result = req.body.search
+        this.ClientePipe = await sqlConfig.dbconnection.query(`
+    SELECT F.CVE_DOC ,P.CANT, P.CVE_ART, P.TOT_PARTIDA, F.FECHAELAB, F.CVE_VEND, V.NOMBRE, F.CVE_CLPV, C.NOMBRE FROM FACTP02 F 
+        INNER JOIN PAR_FACTP02 P ON P.CVE_DOC = F.CVE_DOC 
+        INNER JOIN INVE02 I ON P.CVE_ART=I.CVE_ART
+        INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
+        INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
+        WHERE RTRIM(LTRIM(F.CVE_DOC))= '${result}';
+    `);
+        let arrayCliente = this.ClientePipe.recordsets
+        let secondArray = arrayCliente[0]
+        let clienteEncontrado = secondArray[0]
+
+        if (clienteEncontrado.length === 0) {
+            return res.status(400).send({ message: 'Cliente no encontrado' });
+        }
+        else {
+            return res.send({ message: 'Cliente encontrado', clienteEncontrado });
+        }
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send({ message: 'Error al obtener el cliente', err });
+    }
+}
+
