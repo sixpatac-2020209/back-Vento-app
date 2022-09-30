@@ -10,11 +10,11 @@ exports.pedidosTest = async (req, res) => {
 exports.getPedidos = async (req, res) => {
     try {
         let Pedidos = await sqlConfig.dbconnection.query(`
-        SELECT F.CVE_DOC,P.CVE_ART,I.DESCR,F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE FROM FACTP02 F 
-        INNER JOIN PAR_FACTP02 P ON P.CVE_DOC = F.CVE_DOC 
-        INNER JOIN INVE02 I ON P.CVE_ART=I.CVE_ART
+        SELECT F.CVE_DOC,  CONCAT('$. ', CONVERT(VARCHAR(50), CAST(ROUND(F.IMPORTE/F.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE ,
+        F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE FROM FACTP02 F 
         INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
-        INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV`);
+        INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
+		WHERE F.SERIE = 'EXP' and F.STATUS <> 'C'`);    
 
         let arrayPedidos = Pedidos.recordsets;
         let returnPedidos = arrayPedidos[0];
