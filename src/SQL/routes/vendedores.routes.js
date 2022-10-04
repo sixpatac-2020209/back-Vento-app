@@ -8,5 +8,7 @@ api.get('/vendedoresTest', vendedoresController.vendedoresTest);
 api.get('/getVendedores', vendedoresController.getVendedores);
 api.get('/getVendedor/:id', vendedoresController.getVendedor);
 
+api.get('/getVendedorPedido/:id', vendedoresController.getVendedorPedido);
+
 
 module.exports = api

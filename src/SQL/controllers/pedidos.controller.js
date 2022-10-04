@@ -34,12 +34,11 @@ exports.getPedidosPorAño = async (req, res) => {
     try {
         let data = req.body.year;
         let Pedidos = await sqlConfig.dbconnection.query(`
-        SELECT F.CVE_DOC,P.CVE_ART,I.DESCR,F.CVE_CLPV,C.NOMBRE,V.NOMBRE FROM FACTP02 F 
-        INNER JOIN PAR_FACTP02 P ON P.CVE_DOC = F.CVE_DOC 
-        INNER JOIN INVE02 I ON P.CVE_ART=I.CVE_ART
+        SELECT F.CVE_DOC,  CONCAT('$. ', CONVERT(VARCHAR(50), CAST(ROUND(F.IMPORTE/F.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE ,
+        F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE FROM FACTP02 F 
         INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
         INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
-        WHERE YEAR(F.FECHA_DOC)= '${data}'`);
+		WHERE F.SERIE = 'EXP' and F.STATUS <> 'C' AND YEAR(F.FECHA_DOC)= '${data}'`);
 
         let arrayPedidos = Pedidos.recordsets
         let returnPedidos = arrayPedidos[0];
@@ -65,12 +64,14 @@ exports.getPedidosPorMes = async (req, res) => {
         };
 
         let Pedidos = await sqlConfig.dbconnection.query(`
-        SELECT F.CVE_DOC,P.CVE_ART,I.DESCR,F.CVE_CLPV,C.NOMBRE,V.NOMBRE FROM FACTP02 F 
-        INNER JOIN PAR_FACTP02 P ON P.CVE_DOC = F.CVE_DOC 
-        INNER JOIN INVE02 I ON P.CVE_ART=I.CVE_ART
+        SELECT F.CVE_DOC,  CONCAT('$. ', CONVERT(VARCHAR(50), CAST(ROUND(F.IMPORTE/F.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE ,
+        F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE 
+        FROM FACTP02 F 
         INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
         INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
-        WHERE YEAR(F.FECHA_DOC) = '${data.year}' AND MONTH(F.FECHA_DOC)= '${data.month}'`);
+		WHERE F.SERIE = 'EXP' and F.STATUS <> 'C' 
+        AND YEAR(F.FECHA_DOC) = '${data.year}' 
+            AND MONTH(F.FECHA_DOC)= '${data.month}'`);
 
         let arrayPedidos = Pedidos.recordsets
         let returnPedidos = arrayPedidos[0];
