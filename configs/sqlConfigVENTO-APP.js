@@ -5,7 +5,7 @@ var config = {
     user: 'sa',
     password: '.Admin123',
     server: 'localhost',
-    database: 'SAE80Empre02',
+    database: 'VENTOAPP',
     options: {
         encrypt: true,
         enableArithAbort: true,
@@ -27,6 +27,6 @@ exports.dbconnection = new sql.connect(config, err => {
         return request;
         
     } else{
-        console.log("SQLServer EMPRE02 | Connected to Database.");        
+        console.log("SQLServer VENTO APP | Connected to Database.");        
     }  
 });
