@@ -1,5 +1,6 @@
 'use strict';
 const sqlConfig = require('../../../configs/sqlConfig');
+const { validateData } = require('../utils/validate');
 
 //FUNCIONES PÚBLICAS
 exports.pedidosTest = async (req, res) => {
@@ -14,7 +15,7 @@ exports.getPedidos = async (req, res) => {
         F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE FROM FACTP02 F 
         INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
         INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
-		WHERE F.SERIE = 'EXP' and F.STATUS <> 'C'`);    
+		WHERE F.SERIE = 'EXP' and F.STATUS <> 'C'`);
 
         let arrayPedidos = Pedidos.recordsets;
         let returnPedidos = arrayPedidos[0];
@@ -32,22 +33,29 @@ exports.getPedidos = async (req, res) => {
 
 exports.getPedidosPorAño = async (req, res) => {
     try {
-        let data = req.body.year;
+        let params = req.body
+        let data = {
+            year : params.YEAR
+        }
+
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
+
         let Pedidos = await sqlConfig.dbconnection.query(`
         SELECT F.CVE_DOC,  CONCAT('$. ', CONVERT(VARCHAR(50), CAST(ROUND(F.IMPORTE/F.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE ,
         F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE FROM FACTP02 F 
         INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
         INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
-		WHERE F.SERIE = 'EXP' and F.STATUS <> 'C' AND YEAR(F.FECHA_DOC)= '${data}'`);
+		WHERE F.SERIE = 'EXP' and F.STATUS <> 'C' AND YEAR(F.FECHA_DOC)= '${data.year}'`);
 
         let arrayPedidos = Pedidos.recordsets
-        let returnPedidos = arrayPedidos[0];
+        let returnPedidosPorYear = arrayPedidos[0];
 
         if (!Pedidos) {
-            return res.status(400).send({ message: 'Clientes no encontrados' })
+            return res.status(400).send({ message: 'Pedidos no encontrados' })
         }
         else {
-            return res.send({ returnPedidos });
+            return res.send({ returnPedidosPorYear });
         }
     } catch (err) {
         console.log(err);
@@ -59,9 +67,12 @@ exports.getPedidosPorMes = async (req, res) => {
     try {
         let params = req.body
         let data = {
-            year: params.year,
-            month: params.month
+            year: params.YEAR,
+            month: params.MONTH
         };
+
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let Pedidos = await sqlConfig.dbconnection.query(`
         SELECT F.CVE_DOC,  CONCAT('$. ', CONVERT(VARCHAR(50), CAST(ROUND(F.IMPORTE/F.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE ,
@@ -71,15 +82,15 @@ exports.getPedidosPorMes = async (req, res) => {
         INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
 		WHERE F.SERIE = 'EXP' and F.STATUS <> 'C' 
         AND YEAR(F.FECHA_DOC) = '${data.year}' 
-            AND MONTH(F.FECHA_DOC)= '${data.month}'`);
+        AND MONTH(F.FECHA_DOC)= '${data.month}'`);
 
         let arrayPedidos = Pedidos.recordsets
-        let returnPedidos = arrayPedidos[0];
+        let returnPedidosPorMes = arrayPedidos[0];
         if (!Pedidos) {
-            return res.status(400).send({ message: 'Clientes no encontrados' })
+            return res.status(400).send({ message: 'Pedidos no encontrados' })
         }
         else {
-            return res.send({ returnPedidos });
+            return res.send({ returnPedidosPorMes });
         }
     } catch (err) {
         console.log(err);

@@ -8,11 +8,10 @@ api.get('/pedidosTest', pedidosController.pedidosTest);
 
 // Admin
 api.get('/getPedidos', pedidosController.getPedidos);
-api.post('/getPedidoPorAnio', pedidosController.getPedidosPorAño);
+api.post('/getPedidosPorAnio', pedidosController.getPedidosPorAño);
 api.post('/getPedidosPorMes', pedidosController.getPedidosPorMes);
 api.post('/savePedido', pedidosController.savePedidos);
 api.post('/updatePedido/:id', pedidosController.updatePedido);
-api.delete('/deletePedido/:id', pedidosController.deletePedido );
 
 // Vendedor
 api.post('/getPedidosPorCliente', pedidosController.getPedidosPorCliente);

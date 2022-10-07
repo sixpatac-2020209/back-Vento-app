@@ -22,9 +22,10 @@ sql.on('error', err => {
 
 exports.dbconnection = new sql.connect(config, err => { 
     if(err){
-        let request = new sql.request()
-        return req.send({request});
+        let request = new sql.Request()
         console.log(err) ;
+        return request;
+        
     } else{
         console.log("SQLServer | Connected to Database.");        
     }  
