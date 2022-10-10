@@ -1,5 +1,5 @@
 'use strict';
-const sqlConfig = require('../../../configs/sqlConfig');
+const sqlConfig = require('../../../../configs/sqlConfig');
 const sql = require('mssql');
 
 //FUNCIONES PÚBLICAS

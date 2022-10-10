@@ -1,6 +1,6 @@
 'use strict';
-const sqlConfig = require('../../../configs/sqlConfig');
-const { validateData } = require('../utils/validate');
+const sqlConfig = require('../../../../configs/sqlConfig');
+const { validateData } = require('../../utils/validate');
 
 //FUNCIONES PÚBLICAS
 exports.pedidosTest = async (req, res) => {
@@ -35,7 +35,7 @@ exports.getPedidosPorAño = async (req, res) => {
     try {
         let params = req.body
         let data = {
-            year : params.YEAR
+            year: params.YEAR
         }
 
         let msg = validateData(data);
@@ -66,10 +66,13 @@ exports.getPedidosPorAño = async (req, res) => {
 exports.getPedidosPorMes = async (req, res) => {
     try {
         let params = req.body
-        let data = {
-            year: params.YEAR,
-            month: params.MONTH
-        };
+        let data = {    
+            date: params.DATED
+        };  
+        console.log(data.date)
+        let dateSplit = data.date.split('-');       
+        let yearP = dateSplit[0];
+        let monthP = dateSplit[1]
 
         let msg = validateData(data);
         if (msg) return res.status(400).send(msg);
@@ -81,8 +84,8 @@ exports.getPedidosPorMes = async (req, res) => {
         INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
         INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
 		WHERE F.SERIE = 'EXP' and F.STATUS <> 'C' 
-        AND YEAR(F.FECHA_DOC) = '${data.year}' 
-        AND MONTH(F.FECHA_DOC)= '${data.month}'`);
+        AND YEAR(F.FECHA_DOC) = '${yearP}' 
+        AND MONTH(F.FECHA_DOC)= '${monthP}'`);
 
         let arrayPedidos = Pedidos.recordsets
         let returnPedidosPorMes = arrayPedidos[0];

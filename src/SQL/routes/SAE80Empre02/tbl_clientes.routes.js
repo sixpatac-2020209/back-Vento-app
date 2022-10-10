@@ -1,7 +1,7 @@
 'use strict'
 
 const express = require('express');
-const clienteController = require('../controllers/clientes.controller');
+const clienteController = require('../../controllers/SAE80Empre02/clientes.controller');
 const api = express.Router();
 
 api.get('/clientesTest', clienteController.clientesTest);

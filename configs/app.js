@@ -13,10 +13,22 @@ const cors = require('cors');
 const port = process.env.PORT || 3200 ;
 ////////////////////////////////////////////
 
+/** MONGO DB */
 const userRoutes = require('../src/MongoDB/routes/usuario.routes');
-const clienteRoutes = require('../src/SQL/routes/tbl_clientes.routes');
-const pedidoRoutes = require('../src/SQL/routes/pedidos.routes')
-const vendedorRoutes = require('../src/SQL/routes/vendedores.routes')
+
+/** SQL Server SAE80Empre02 */
+const clienteRoutes = require('../src/SQL/routes/SAE80Empre02/tbl_clientes.routes');
+const pedidoRoutes = require('../src/SQL/routes/SAE80Empre02/pedidos.routes')
+const vendedorRoutes = require('../src/SQL/routes/SAE80Empre02/vendedores.routes')
+
+/** SQL Server VENTOAPP */
+const autorizacionRoutes = require('../src/SQL/routes/VENTOAPP/autorización.routes');
+const detalleProcesosRoures = require('../src/SQL/routes/VENTOAPP/detalleProcesos.routes');
+const faseRoutes = require('../src/SQL/routes/VENTOAPP/fase.routes');
+const ordenRoutes = require('../src/SQL/routes/VENTOAPP/orden.routes');
+const procesosRoutes = require('../src/SQL/routes/VENTOAPP/procesos.routes');
+const programaciónRoutes = require('../src/SQL/routes/VENTOAPP/programación.routes');
+const sedesRoutes = require('../src/SQL/routes/VENTOAPP/sedes.routes');
 
 ////////////////////////////////////////////
 
@@ -28,10 +40,22 @@ app.use(cors());
 
 ////////////////////////////////////////////
 
+/** MONGO */
 app.use('/user', userRoutes);
+
+/** SQL SAE80Empre02 */
 app.use('/clientes', clienteRoutes);
 app.use('/pedidos', pedidoRoutes);
 app.use('/vendedores',vendedorRoutes);
+
+/** VENTOAPP */
+app.use('/autorizacion', autorizacionRoutes);
+app.use('/detalleProcesos', detalleProcesosRoures);
+app.use('/fase', faseRoutes);
+app.use('/orden', ordenRoutes);
+app.use('/procesos', procesosRoutes);
+app.use('/programacion', programaciónRoutes);
+app.use('/sedes', sedesRoutes);
 
 ////////////////////////////////////////////
 exports.initServer = () => app.listen(port, async () => {
