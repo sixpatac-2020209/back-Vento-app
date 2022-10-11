@@ -5,5 +5,8 @@ const detalleProcesosController = require('../../controllers/VENTOAPP/detallePro
 const api = express.Router();
 
 api.get('/detalleProcesosTest', detalleProcesosController.detalleProcesosTest);
+api.get('/getDetallesProcesos', detalleProcesosController.getDetallesProcesos);
+api.get('/getDetalleProceso/:id', detalleProcesosController.getDetalleProceso);
+
 
 module.exports = api

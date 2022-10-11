@@ -5,5 +5,9 @@ const procesosController = require('../../controllers/VENTOAPP/procesos.controll
 const api = express.Router();
 
 api.get('/procesosTest', procesosController.procesosTest);
+api.get('/getProcesos', procesosController.getProcesos);
+api.get('/getProceso/:id', procesosController.getProceso);
+
+api.post('/createProceso', procesosController.createProceso);
 
 module.exports = api

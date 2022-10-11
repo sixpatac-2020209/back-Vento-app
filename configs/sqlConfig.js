@@ -1,7 +1,7 @@
 'use strict';
 const sql = require('mssql');
 
-var config = {
+var SAE80Empre02 = {
     user: 'sa',
     password: '.Admin123',
     server: 'localhost',
@@ -16,11 +16,52 @@ var config = {
     port: 1433
 }
 
+let VENTOAPP = {
+    user: 'sa',
+    password: '.Admin123',
+    server: 'localhost',
+    database: 'VENTOAPP',
+    options: {
+        encrypt: true,
+        enableArithAbort: true,
+        enablerithPort: false,
+        trustedConnection: false,
+        trustServerCertificate: true,
+    },
+    port: 1433
+}
+
 sql.on('error', err => {
-    console.log("Sql database connection error " ,err);
+    console.log("Sql database connection error ", err);
 });
 
-exports.dbconnection = new sql.connect(config, err => { 
+const conectionSae = new sql.ConnectionPool(SAE80Empre02, err =>{
+    conectionSae.connect()
+    if(err){
+        let request = new sql.Request()
+        console.log(err) ;
+        return request;
+        
+    } else{
+        console.log("SQLServer SAE80Empre02 | Connected to Database.");        
+    }  
+})
+
+
+const conectionVENTO = new sql.ConnectionPool(VENTOAPP, err =>{
+    conectionVENTO.connect()
+    if(err){
+        let request = new sql.Request()
+        console.log(err) ;
+        return request;
+        
+    } else{
+        console.log("SQLServer VENTOAPP | Connected to Database.");        
+    }  
+})
+
+
+/* exports.dbconnection = new sql.connect(config, err => { 
     if(err){
         let request = new sql.Request()
         console.log(err) ;
@@ -29,4 +70,6 @@ exports.dbconnection = new sql.connect(config, err => {
     } else{
         console.log("SQLServer EMPRE02 | Connected to Database.");        
     }  
-});
+}); */
+
+module.exports = {"SAE": conectionSae, "VENTO": conectionVENTO}

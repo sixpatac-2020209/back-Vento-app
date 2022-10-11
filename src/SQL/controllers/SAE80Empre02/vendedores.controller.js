@@ -9,7 +9,7 @@ exports.vendedoresTest = async (req, res) => {
 
 exports.getVendedores = async (req, res) => {
     try {
-        let vendedores = await sqlConfig.dbconnection.query(`SELECT * FROM VEND02 `);
+        let vendedores = await sqlConfig.SAE.query(`SELECT * FROM VEND02 `);
         let arrayVendedores = vendedores.recordsets
         let returnVendedores = arrayVendedores[0];
 
@@ -28,7 +28,7 @@ exports.getVendedores = async (req, res) => {
 exports.getVendedor = async (req, res) => {
     try {
         let id = req.params.id;
-        let vendedor = await sqlConfig.dbconnection.query(`SELECT * FROM VEND02 WHERE RTRIM(LTRIM(CVE_VEND)) = ${id}`);
+        let vendedor = await sqlConfig.SAE.query(`SELECT * FROM VEND02 WHERE RTRIM(LTRIM(CVE_VEND)) = ${id}`);
         let arrayVendedor = vendedor.recordsets;
         let secondArray = arrayVendedor[0];
         let returnVendedor = secondArray[0];
@@ -53,7 +53,7 @@ exports.getVendedorPedido = async (req, res) => {
     try {
         let item = '';
         let id = req.params.id;
-        let vendedor = await sqlConfig.dbconnection.query(`
+        let vendedor = await sqlConfig.SAE.query(`
         SELECT V.CORREOE FROM VEND02 V 
         INNER JOIN FACTP02 F ON F.CVE_VEND = V.CVE_VEND
         WHERE V.STATUS ='A' AND RTRIM(LTRIM(F.CVE_DOC)) = '${id}'`);

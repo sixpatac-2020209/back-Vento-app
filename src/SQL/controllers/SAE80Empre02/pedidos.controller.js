@@ -10,7 +10,7 @@ exports.pedidosTest = async (req, res) => {
 //// ADMIN
 exports.getPedidos = async (req, res) => {
     try {
-        let Pedidos = await sqlConfig.dbconnection.query(`
+        let Pedidos = await sqlConfig.SAE.query(`
         SELECT F.CVE_DOC,  CONCAT('$. ', CONVERT(VARCHAR(50), CAST(ROUND(F.IMPORTE/F.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE ,
         F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE FROM FACTP02 F 
         INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
@@ -41,7 +41,7 @@ exports.getPedidosPorAño = async (req, res) => {
         let msg = validateData(data);
         if (msg) return res.status(400).send(msg);
 
-        let Pedidos = await sqlConfig.dbconnection.query(`
+        let Pedidos = await sqlConfig.SAE.query(`
         SELECT F.CVE_DOC,  CONCAT('$. ', CONVERT(VARCHAR(50), CAST(ROUND(F.IMPORTE/F.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE ,
         F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE FROM FACTP02 F 
         INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
@@ -77,7 +77,7 @@ exports.getPedidosPorMes = async (req, res) => {
         let msg = validateData(data);
         if (msg) return res.status(400).send(msg);
 
-        let Pedidos = await sqlConfig.dbconnection.query(`
+        let Pedidos = await sqlConfig.SAE.query(`
         SELECT F.CVE_DOC,  CONCAT('$. ', CONVERT(VARCHAR(50), CAST(ROUND(F.IMPORTE/F.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE ,
         F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE 
         FROM FACTP02 F 
@@ -121,7 +121,7 @@ exports.getPedidosPorCliente = async (req, res) => {
             cliente: params.cliente
         }
 
-        let pedidosVendedor = await sqlConfig.dbconnection.query(`
+        let pedidosVendedor = await sqlConfig.SAE.query(`
         SELECT * FROM FACTP02 F INNER JOIN CLIE02 C ON F.CVE_CLPV = C.CLAVE 
         WHERE RTRIM(LTRIM(CVE_CLPV)) = '${data.cliente}' 
         AND TIP_DOC_SIG IS NULL AND F.STATUS<>'C'`);
@@ -147,7 +147,7 @@ exports.getDetallePedido = async (req, res) => {
     try {
         let idDetallePedido = req.body.idDetallePedido;
 
-        let detallePedido = await sqlConfig.dbconnection.query(`
+        let detallePedido = await sqlConfig.SAE.query(`
         SELECT P.CVE_DOC, P.CVE_ART, I.DESCR, P.CANT, P.PREC, F.IMPORTE FROM PAR_FACTP02 P 
 		INNER JOIN INVE02 I ON P.CVE_ART = I.CVE_ART 
 		INNER JOIN FACTP02 F ON F.CVE_DOC = P.CVE_DOC
@@ -183,7 +183,7 @@ exports.editarPedido = async (req, res) => {
 exports.getPedido = async (req, res) => {
     try {
         let id = req.params.id;
-        let Pedido = await sqlConfig.dbconnection.query(`
+        let Pedido = await sqlConfig.SAE.query(`
         SELECT F.CVE_DOC, P.CANT, P.CVE_ART, P.TOT_PARTIDA, F.FECHAELAB, F.CVE_VEND, V.NOMBRE, F.CVE_CLPV, C.NOMBRE FROM FACTP02 F 
         INNER JOIN PAR_FACTP02 P ON P.CVE_DOC = F.CVE_DOC 
         INNER JOIN INVE02 I ON P.CVE_ART=I.CVE_ART

@@ -49,12 +49,12 @@ app.use('/pedidos', pedidoRoutes);
 app.use('/vendedores',vendedorRoutes);
 
 /** VENTOAPP */
-app.use('/autorizacion', autorizacionRoutes);
+app.use('/autorizaciones', autorizacionRoutes);
 app.use('/detalleProcesos', detalleProcesosRoures);
-app.use('/fase', faseRoutes);
-app.use('/orden', ordenRoutes);
+app.use('/fases', faseRoutes);
+app.use('/ordenes', ordenRoutes);
 app.use('/procesos', procesosRoutes);
-app.use('/programacion', programaciónRoutes);
+app.use('/programaciones', programaciónRoutes);
 app.use('/sedes', sedesRoutes);
 
 ////////////////////////////////////////////

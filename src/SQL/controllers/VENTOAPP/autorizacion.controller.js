@@ -1,53 +1,55 @@
 'use strict'
 
-let sqlConfig = require('../../../../configs/sqlConfigVENTO-APP')
+const sqlConfig = require('../../../../configs/sqlConfig');
 const { validateData } = require('../../utils/validate');
 
 /* Función de prueba de conectividad */
-exports.autorizaciónTest = async (req, res) => {
+exports.autorizacionTest = async (req, res) => {
     await res.send({ message: 'Modúlo de autorizaciones corriendo' })
 }
 
-exports.getAutorizaciones = async (req, res) =>{
+exports.getAutorizaciones = async (req, res) => {
     try {
-        let autorizaciones = await sqlConfig.dbconnection.query(`
-        SELECT * FROM TBL_AUTORIZACION
-        `);
+        let autorizaciones = await sqlConfig.VENTO.query(`SELECT * FROM TBL_AUTORIZACION `);
 
         let arrayAuth = autorizaciones.recordsets;
         let returnAuth = arrayAuth[0];
 
-        if(!autorizaciones){
+        if (!autorizaciones) {
             return res.status(400).send({ message: 'Autorizaciones no encontradas' });
+
+        } else if (returnAuth.length === 0) {
+            return res.status(400).send({ message: 'No hay fases que mostrar' });
+
         } else {
-            return res.send({ returnAuth});
+            return res.send({ returnAuth });
         }
     } catch (err) {
         console.log(err)
-        return res.status(500).send({message: 'Error al obtener las autorizaciones', err});
+        return res.status(500).send({ message: 'Error al obtener las autorizaciones', err });
     }
 }
 
-exports.getAutorizacion = async (req, res) =>{
+exports.getAutorizacion = async (req, res) => {
     try {
         let id = req.params.id
 
-        let autorizacion = await sqlConfig.dbconnection.query(`
-        SELECT * FROM TBL_PROGRAMACION WHERE LTRIM(RTRIM(ID_PROGRAMACION)) = ${id}
+        let autorizacion = await sqlConfig.VENTO.query(`
+            SELECT * FROM TBL_AUTORIZACION WHERE LTRIM(RTRIM(CVE_AUTORIZACION)) = ${id}
         `);
 
         let arrayAutorizacion = autorizacion.recordsets;
         let returnAutorizacion = arrayAutorizacion[0];
 
-        if(!autorizacion){
-            return res.status(400).send({message: 'Autorizacion no encontrada'})
-        } else{
+        if (!autorizacion || returnAutorizacion.length === 0) {
+            return res.status(400).send({ message: 'Autorización no encontrada' })
+        } else {
             return res.send({ returnAutorizacion });
         }
 
     } catch (err) {
         console.log(err);
-        return res.status(500).send({message: 'Error al obtener la Autorizacion'});
+        return res.status(500).send({ message: 'Error al obtener la Autorización' });
 
     }
 }
