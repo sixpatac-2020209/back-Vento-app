@@ -8,9 +8,8 @@ api.get('/clientesTest', clienteController.clientesTest);
 
 //Rutas Públicas//
 api.get('/getClientes', clienteController.getClientes);
-
 api.get('/getClientesVendedor', clienteController.getClientesVendedor);
-
+api.get('/getClientePedido/:id', clienteController.getClientePedido);
 api.get('/getCliente/:id', clienteController.getCliente);
 
 module.exports = api;

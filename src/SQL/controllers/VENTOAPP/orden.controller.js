@@ -61,18 +61,20 @@ exports.getOrden = async (req, res) => {
 
 exports.createOrden = async (req, res) => {
     try {
+        const hoy = Date.now();
+        const newDate = new Date(hoy)
         let params = req.body
         let data = {
-            CVE_ORDEN: params.CVE_ORDEN,
             CVE_PEDIDO: params.CVE_PEDIDO,
-            ESTATUS: params.ESTATUS,
+            ESTATUS: 'Apertura',
             CLIENTE: params.CLIENTE,
-            FECHA_INGRESO: params.FECHA_INGRESO,
-            FECHA_TERMINA: params.FECHA_TERMINA,
+            FECHA_INGRESO: newDate.toLocaleDateString(),
+            FECHA_TERMINA: ' ',
             VENDEDOR: params.VENDEDOR,
             ID_SEDE: params.ID_SEDE,
             SERIE: params.SERIE,
         }
+        
         let msg = validateData(data);
         if (msg) return res.status(400).send(msg);
 

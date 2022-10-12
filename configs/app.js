@@ -55,7 +55,7 @@ app.use('/fases', faseRoutes);
 app.use('/ordenes', ordenRoutes);
 app.use('/procesos', procesosRoutes);
 app.use('/programaciones', programaciónRoutes);
-app.use('/sedes', sedesRoutes);
+app.use('/plantas', sedesRoutes);
 
 ////////////////////////////////////////////
 exports.initServer = () => app.listen(port, async () => {

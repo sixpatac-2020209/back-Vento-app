@@ -97,3 +97,31 @@ exports.getClientePipeId = async (req, res) => {
     }
 }
 
+exports.getClientePedido = async (req, res) => {
+    try {
+        
+        let id = req.params.id;
+        let cliente = await sqlConfig.SAE.query(`
+        SELECT LTRIM(RTRIM(C.CLAVE)) CLAVE, C.NOMBRE, C.RFC, C.MUNICIPIO FROM CLIE02 C
+        INNER JOIN FACTP02 F ON F.CVE_CLPV = C.CLAVE
+        WHERE C.STATUS = 'A' AND RTRIM(LTRIM(F.CVE_DOC)) =  '${id}'`);
+        let arrayCliente = cliente.recordsets;
+        let secondArray = arrayCliente[0]
+        let returnCliente = secondArray[0];
+
+        if (!cliente) {
+            return res.status(400).send({ message: 'Cliente no encontrado' })
+        } else {
+            if (!returnCliente || returnCliente.length === 0) {
+                return res.status(400).send({ message: 'Cliente no encontrado' });
+
+            } else {
+                return res.send({ message: 'Cliente encontrado', returnCliente });
+            }
+        }
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({ message: 'Error al obtener al Cliente' });
+    }
+};
