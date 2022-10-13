@@ -102,7 +102,7 @@ exports.getClientePedido = async (req, res) => {
         
         let id = req.params.id;
         let cliente = await sqlConfig.SAE.query(`
-        SELECT LTRIM(RTRIM(C.CLAVE)) CLAVE, C.NOMBRE, C.RFC, C.MUNICIPIO FROM CLIE02 C
+        SELECT LTRIM(RTRIM(C.CLAVE)) CLAVE, C.NOMBRE, C.CURP, C.MUNICIPIO, C.CLASIFIC, C.CON_CREDITO FROM CLIE02 C
         INNER JOIN FACTP02 F ON F.CVE_CLPV = C.CLAVE
         WHERE C.STATUS = 'A' AND RTRIM(LTRIM(F.CVE_DOC)) =  '${id}'`);
         let arrayCliente = cliente.recordsets;
@@ -117,7 +117,7 @@ exports.getClientePedido = async (req, res) => {
 
             } else {
                 return res.send({ message: 'Cliente encontrado', returnCliente });
-            }
+            }   
         }
 
     } catch (err) {

@@ -12,8 +12,8 @@ exports.getPedidos = async (req, res) => {
     try {
         let Pedidos = await sqlConfig.SAE.query(`
         SELECT F.CVE_DOC,  CONCAT('$. ', CONVERT(VARCHAR(50), CAST(ROUND(F.IMPORTE/F.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE ,
-        F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE, F.SERIE FROM FACTP02 F 
-        INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
+        F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE, F.SERIE FROM FACTP02 F
+        INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND
         INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
 		WHERE F.SERIE = 'EXP' and F.STATUS <> 'C'`);
 
@@ -34,11 +34,11 @@ exports.getPedidos = async (req, res) => {
 exports.getPedidosPorMes = async (req, res) => {
     try {
         let params = req.body
-        let data = {    
+        let data = {
             DATED: params.DATED
-        };  
+        };
         console.log(data.date)
-        let dateSplit = data.date.split('-');       
+        let dateSplit = data.date.split('-');
         let yearP = dateSplit[0];
         let monthP = dateSplit[1]
 
@@ -48,11 +48,11 @@ exports.getPedidosPorMes = async (req, res) => {
         let Pedidos = await sqlConfig.SAE.query(`
         SELECT F.CVE_DOC,  CONCAT('$. ', CONVERT(VARCHAR(50), CAST(ROUND(F.IMPORTE/F.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE ,
         F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE, F.SERIE
-        FROM FACTP02 F 
-        INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
+        FROM FACTP02 F
+        INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND
         INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
-		WHERE F.SERIE = 'EXP' and F.STATUS <> 'C' 
-        AND YEAR(F.FECHA_DOC) = '${yearP}' 
+		WHERE F.SERIE = 'EXP' and F.STATUS <> 'C'
+        AND YEAR(F.FECHA_DOC) = '${yearP}'
         AND MONTH(F.FECHA_DOC)= '${monthP}'`);
 
         let arrayPedidos = Pedidos.recordsets
@@ -78,8 +78,8 @@ exports.getPedidosPorCliente = async (req, res) => {
         }
 
         let pedidosVendedor = await sqlConfig.SAE.query(`
-        SELECT * FROM FACTP02 F INNER JOIN CLIE02 C ON F.CVE_CLPV = C.CLAVE 
-        WHERE RTRIM(LTRIM(CVE_CLPV)) = '${data.cliente}' 
+        SELECT * FROM FACTP02 F INNER JOIN CLIE02 C ON F.CVE_CLPV = C.CLAVE
+        WHERE RTRIM(LTRIM(CVE_CLPV)) = '${data.cliente}'
         AND TIP_DOC_SIG IS NULL AND F.STATUS<>'C'`);
 
         let arrayPedidosVendedor = pedidosVendedor.recordsets
@@ -98,45 +98,19 @@ exports.getPedidosPorCliente = async (req, res) => {
 };
 
 
-
-exports.getDetallePedido = async (req, res) => {
-    try {
-        let idDetallePedido = req.body.idDetallePedido;
-
-        let detallePedido = await sqlConfig.SAE.query(`
-        SELECT P.CVE_DOC, P.CVE_ART, I.DESCR, P.CANT, P.PREC, F.IMPORTE FROM PAR_FACTP02 P 
-		INNER JOIN INVE02 I ON P.CVE_ART = I.CVE_ART 
-		INNER JOIN FACTP02 F ON F.CVE_DOC = P.CVE_DOC
-		WHERE RTRIM(LTRIM(P.CVE_DOC)) = '${idDetallePedido}'`);
-
-        let arrayDetalles = detallePedido.recordsets
-        let returnDetalles = arrayDetalles[0];
-
-        if (!detallePedido) {
-            return res.status(400).send({ message: 'Pedidos no encontrados' });
-        }
-        else {
-            return res.send({ returnDetalles });
-        }
-    } catch (err) {
-        console.log(err);
-        return res.status(500).send({ message: 'Error al obtener los pedidos', err });
-
-    }
-};
-
-
 ///Global
 exports.getPedido = async (req, res) => {
     try {
         let id = req.params.id;
         let Pedido = await sqlConfig.SAE.query(`
-        SELECT F.CVE_DOC, P.CANT, P.CVE_ART, P.TOT_PARTIDA, F.FECHAELAB, F.CVE_VEND, V.NOMBRE, F.CVE_CLPV, C.NOMBRE, F.SERIE FROM FACTP02 F 
-        INNER JOIN PAR_FACTP02 P ON P.CVE_DOC = F.CVE_DOC 
+        SELECT F.CVE_DOC, P.CANT, P.CVE_ART, P.TOT_PARTIDA, F.FECHAELAB, F.CVE_VEND, V.NOMBRE, F.CVE_CLPV, C.NOMBRE, F.SERIE,
+        CONCAT('$. ', CONVERT(VARCHAR(50), CAST(ROUND(F.IMPORTE/F.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE
+        FROM FACTP02 F
+        INNER JOIN PAR_FACTP02 P ON P.CVE_DOC = F.CVE_DOC
         INNER JOIN INVE02 I ON P.CVE_ART=I.CVE_ART
-        INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND 
+        INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND
         INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
-        WHERE F.CVE_DOC='${id}'`);
+        WHERE F.CVE_DOC = '${id}'`);
         let arrayPedido = Pedido.recordsets
         let secondArray = arrayPedido[0];
         let returnPedido = secondArray[0];
@@ -152,3 +126,31 @@ exports.getPedido = async (req, res) => {
         return res.status(500).send({ message: 'Error al obtener el pedido', err })
     }
 };
+
+exports.getDetallePedido = async (req, res) => {
+    try {
+        let id = req.params.id;
+        let Pedido = await sqlConfig.SAE.query(`
+        SELECT P.CVE_DOC, I.DESCR, P.CANT, P.CVE_ART, F.CVE_OBS, F.STR_OBS ,
+        CONCAT('$.', CONVERT(VARCHAR(50), CAST(ROUND(I.COSTO_PROM, 2, 1) AS MONEY ),1)) COSTO_PROM ,
+		    CONCAT('$.', CONVERT(VARCHAR(50), CAST(ROUND((P.CANT*P.PREC)/T.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE
+        FROM PAR_FACTP02 P
+        INNER JOIN OBS_DOCF02 F ON P.CVE_OBS = F.CVE_OBS
+        INNER JOIN INVE02 I ON I.CVE_ART = P.CVE_ART
+		    INNER JOIN FACTP02 T ON T.CVE_DOC = P.CVE_DOC
+        WHERE LTRIM(RTRIM(P.CVE_DOC)) = '${id}'`);
+        let arrayPedido = Pedido.recordsets
+        let returnDetalle = arrayPedido[0];
+
+        if (returnDetalle   .length === 0) {
+            return res.status(400).send({ message: 'Pedido no encontrado' });
+        }
+        else {
+            return res.send({ message: 'Pedido encontrado', returnDetalle });
+        }
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send({ message: 'Error al obtener el Detalle de Pedido' })
+    }
+}

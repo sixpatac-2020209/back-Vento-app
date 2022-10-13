@@ -16,5 +16,7 @@ api.post('/getPedidosPorCliente', pedidosController.getPedidosPorCliente);
 api.post('/getDetallePedido',pedidosController.getDetallePedido);
 
 api.get('/getPedido/:id', pedidosController.getPedido);
+api.get('/getDetallePedido/:id', pedidosController.getDetallePedido);
+
 
 module.exports = api
