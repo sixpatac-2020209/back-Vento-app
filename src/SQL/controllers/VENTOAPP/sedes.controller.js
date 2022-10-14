@@ -38,13 +38,14 @@ exports.getSedes = async (req, res) => {
 exports.getSede = async (req, res) => {
     try {
         let id = req.params.id
-
+        
         let sede = await sqlConfig.VENTO.query(`
-        SELECT * FROM TBL_SEDES where LTRIM(RTRIM(ID_SEDE )) = '${id}'
+        SELECT ID_SEDE FROM TBL_SEDES WHERE ID_SEDE = '${id}'
         `);
 
         let arraySede = sede.recordsets;
-        let returnSede = arraySede[0];
+        let secondArraySede = arraySede[0]
+        let returnSede = secondArraySede[0];
 
         if (!sede || returnSede.length === 0) {
             return res.status(400).send({ message: 'Detalle de Proceso no encontrado' });

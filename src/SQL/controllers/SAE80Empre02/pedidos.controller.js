@@ -115,11 +115,29 @@ exports.getPedido = async (req, res) => {
         let secondArray = arrayPedido[0];
         let returnPedido = secondArray[0];
 
+        let pedidoToOrden = await sqlConfig.SAE.query(`
+        SELECT 
+            LTRIM(RTRIM(C.CLAVE)) CLAVE,
+            LTRIM(RTRIM(V.CVE_VEND)) CVE_VEND, 
+            LTRIM(RTRIM(F.CVE_DOC)) CVE_DOC 
+
+            FROM CLIE02 C  
+            INNER JOIN FACTP02 F ON F.CVE_CLPV = C.CLAVE
+            INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND
+	        WHERE C.STATUS = 'A' AND RTRIM(LTRIM(F.CVE_DOC)) = '${id}'
+            `);
+        let arrayPedidoToOrden = pedidoToOrden.recordsets
+        let secondArrayToOrden = arrayPedidoToOrden[0];
+        let returnPedidoToOrden = secondArrayToOrden[0];
+
+
         if (returnPedido.length === 0) {
             return res.status(400).send({ message: 'Pedido no encontrado' });
+        } else if (returnPedidoToOrden.length === 0) {
+            return res.status(400).send({ message: 'Pedido para la orden    no encontrado' });
         }
         else {
-            return res.send({ message: 'Pedido encontrado', returnPedido });
+            return res.send({ message: 'Pedido encontrado', returnPedido, returnPedidoToOrden });
         }
     } catch (err) {
         console.log(err);
@@ -142,7 +160,7 @@ exports.getDetallePedido = async (req, res) => {
         let arrayPedido = Pedido.recordsets
         let returnDetalle = arrayPedido[0];
 
-        if (returnDetalle   .length === 0) {
+        if (returnDetalle.length === 0) {
             return res.status(400).send({ message: 'Pedido no encontrado' });
         }
         else {

@@ -64,18 +64,23 @@ exports.createOrden = async (req, res) => {
   try {
     const hoy = Date.now();
     const newDate = new Date(hoy)
+    let dateString = newDate.toISOString()
+    let newOnlyDate = dateString.split('T')
 
     let params = req.body
     let data = {
-      CVE_PEDIDO: params.CVE_PEDIDO,
+      CVE_DOC: params.CVE_DOC,
+
+      CLAVE: params.CLAVE,
+      CVE_VEND: params.CVE_VEND,
+
       ESTATUS: 1,
-      CLIENTE: params.CLIENTE,
-      FECHA_INGRESO: newDate.toISOString(),
-      FECHA_TERMINA: newDate.toISOString(),
-      VENDEDOR: params.VENDEDOR,
-      ID_SEDE: params.ID_SEDE,
+      FECHA_INGRESO: newOnlyDate[0],
+      FECHA_TERMINA: newOnlyDate[0],
+      ID_SEDE : params.ID_SEDE,
       SERIE: 'EXP',
     }
+    console.log(data)
 
     let msg = validateData(data);
     if (msg) return res.status(400).send(msg);
@@ -83,7 +88,7 @@ exports.createOrden = async (req, res) => {
     let newOrden = await sqlConfig.VENTO.query(`
             INSERT INTO TBL_ORDEN
             VALUES( '${data.CVE_PEDIDO}', '${data.ESTATUS}', '${data.CLIENTE}', '${data.FECHA_INGRESO}',
-            '${data.FECHA_TERMINA}', '${data.VENDEDOR}', '${data.ID_SEDE}', '${data.SERIE}')
+            '${data.FECHA_TERMINA}', '${data.VENDEDOR}', '${data.SEDE}', '${data.SERIE}', '${data.AUTORIZACIÓN}')
         `);
 
     let arrayNewOrden = newOrden.recordsets;
@@ -92,7 +97,7 @@ exports.createOrden = async (req, res) => {
     if (!newOrden) {
       return res.status(400).send({ message: 'Orden no encontrada' })
     } else {
-      return res.send({ message:'Orden creada Satisfactoriamente', returnNewOrden });
+      return res.send({ message: 'Orden creada Satisfactoriamente', returnNewOrden });
     }
   } catch (err) {
     console.log(err);
@@ -139,7 +144,7 @@ exports.deleteOrden = async (req, res) => {
     if (!ordenDeleted) {
       return res.status(400).send({ message: 'Orden no encontrada' })
     } else {
-      return res.send({ message: 'Orden eliminada correctamente', returnOrdenDeleted });
+      return res.send({ message: 'Orden eliminada correctamente' });
     }
   } catch (err) {
     console.log(err)
