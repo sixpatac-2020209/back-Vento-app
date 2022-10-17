@@ -37,13 +37,21 @@ exports.getOrden = async (req, res) => {
   try {
     let id = req.params.id
 
-    let orden = await sqlConfig.VENTO.query(`
-        SELECT * FROM TBL_ORDEN WHERE LTRIM(RTRIM(CVE_ORDEN)) = '${id}'
+    let orden = await sqlConfig.SAE.query(`
+        SELECT  A.CVE_ORDEN, C.CLAVE, C.CLASIFIC, C.CON_CREDITO, C.NOMBRE CLIENTE, C.LOCALIDAD, C.CURP, P.FECHA_DOC, V.NOMBRE VENDEDOR
+
+        FROM FACTP02 P
+        INNER JOIN PAR_FACTP02 F ON P.CVE_DOC=F.CVE_DOC
+        INNER JOIN CLIE02 C ON P.CVE_CLPV=C.CLAVE
+        INNER JOIN VEND02 V ON P.CVE_VEND=V.CVE_VEND
+        INNER JOIN VENTOAPP.dbo.TBL_ORDEN A ON P.CVE_DOC=A.CVE_PEDIDO
+        WHERE A.CVE_ORDEN = ${id}
+
         `);
 
     let arrayOrden = orden.recordsets;
-    let secondArrayOrden = arrayOrden[0];
-    let returnOrden = secondArrayOrden[0];
+    let secondArray = arrayOrden[0];
+    let returnOrden = secondArray[0];
 
     if (!orden || returnOrden.length === 0) {
       return res.status(400).send({ message: 'Orden no encontrada' });
@@ -80,7 +88,6 @@ exports.createOrden = async (req, res) => {
       ID_SEDE: params.ID_SEDE,
       SERIE: 'EXP',
     }
-    console.log(data)
 
     let msg = validateData(data);
     if (msg) return res.status(400).send(msg);
@@ -150,4 +157,69 @@ exports.deleteOrden = async (req, res) => {
     console.log(err)
     return res.status(500).send({ message: 'Error al eliminar la Orden' });
   }
+}
+
+exports.getDetalleOrden = async (req, res) => {
+    try {
+        let id = req.params.id;
+        let Orden = await sqlConfig.SAE.query(`
+          SELECT F.CVE_ART,I.DESCR, O.STR_OBS,F.CANT,
+            CONCAT('$.', CONVERT(VARCHAR(50), CAST(ROUND(F.PREC/P.TIPCAMB, 2, 1) AS MONEY ),1)) PRECIO ,
+            CONCAT('$.', CONVERT(VARCHAR(50), CAST(ROUND((F.CANT*F.PREC)/P.TIPCAMB, 2, 1) AS MONEY ),1)) SUBTOTAL,
+            CONCAT('$.', CONVERT(VARCHAR(50), CAST(ROUND(P.IMPORTE/P.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE
+
+          FROM FACTP02 P
+            INNER JOIN PAR_FACTP02 F ON P.CVE_DOC=F.CVE_DOC
+            INNER JOIN OBS_DOCF02 O ON P.CVE_OBS=O.CVE_OBS
+            INNER JOIN INVE02 I ON F.CVE_ART=I.CVE_ART
+            INNER JOIN VENTOAPP.dbo.TBL_ORDEN A ON P.CVE_DOC=A.CVE_PEDIDO
+            WHERE A.CVE_ORDEN = '${id}'`);
+
+        let arrayOrden = Orden.recordsets;
+        let returnDetalle = arrayOrden[0];
+
+        if (returnDetalle.length === 0) {
+            return res.status(400).send({ message: 'Pedido no encontrado' });
+        }
+        else {
+            return res.send({ message: 'Pedido encontrado', returnDetalle });
+        }
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send({ message: 'Error al obtener el Detalle de Pedido' })
+    }
+}
+
+
+exports.getImporteOrden = async (req, res) => {
+    try {
+        let id = req.params.id;
+        let Orden = await sqlConfig.SAE.query(`
+          SELECT 
+            CONCAT('$.', CONVERT(VARCHAR(50), CAST(ROUND(P.IMPORTE/P.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE
+
+          FROM FACTP02 P
+            INNER JOIN PAR_FACTP02 F ON P.CVE_DOC=F.CVE_DOC
+            INNER JOIN OBS_DOCF02 O ON P.CVE_OBS=O.CVE_OBS
+            INNER JOIN INVE02 I ON F.CVE_ART=I.CVE_ART
+            INNER JOIN VENTOAPP.dbo.TBL_ORDEN A ON P.CVE_DOC=A.CVE_PEDIDO
+            WHERE A.CVE_ORDEN = '${id}'`);
+
+        let arrayOrden = Orden.recordsets;
+        let secondArray = arrayOrden[0]
+        let returnImporte = secondArray[0];
+        console.log(returnImporte);
+
+        if (returnImporte.length === 0) {
+            return res.status(400).send({ message: 'Pedido no encontrado' });
+        }
+        else {
+            return res.send({ message: 'Pedido encontrado', returnImporte });
+        }
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send({ message: 'Error al obtener el Detalle de Pedido' })
+    }
 }
