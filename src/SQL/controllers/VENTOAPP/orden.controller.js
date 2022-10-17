@@ -42,7 +42,8 @@ exports.getOrden = async (req, res) => {
         `);
 
     let arrayOrden = orden.recordsets;
-    let returnOrden = arrayOrden[0];
+    let secondArrayOrden = arrayOrden[0];
+    let returnOrden = secondArrayOrden[0];
 
     if (!orden || returnOrden.length === 0) {
       return res.status(400).send({ message: 'Orden no encontrada' });
@@ -64,8 +65,7 @@ exports.createOrden = async (req, res) => {
   try {
     const hoy = Date.now();
     const newDate = new Date(hoy)
-    let dateString = newDate.toISOString()
-    let newOnlyDate = dateString.split('T')
+    let dateString = newDate.toLocaleDateString()
 
     let params = req.body
     let data = {
@@ -75,9 +75,9 @@ exports.createOrden = async (req, res) => {
       CVE_VEND: params.CVE_VEND,
 
       ESTATUS: 1,
-      FECHA_INGRESO: newOnlyDate[0],
-      FECHA_TERMINA: newOnlyDate[0],
-      ID_SEDE : params.ID_SEDE,
+      FECHA_INGRESO: dateString,
+      FECHA_TERMINA: dateString,
+      ID_SEDE: params.ID_SEDE,
       SERIE: 'EXP',
     }
     console.log(data)
@@ -87,8 +87,8 @@ exports.createOrden = async (req, res) => {
 
     let newOrden = await sqlConfig.VENTO.query(`
             INSERT INTO TBL_ORDEN
-            VALUES( '${data.CVE_PEDIDO}', '${data.ESTATUS}', '${data.CLIENTE}', '${data.FECHA_INGRESO}',
-            '${data.FECHA_TERMINA}', '${data.VENDEDOR}', '${data.SEDE}', '${data.SERIE}', '${data.AUTORIZACIÓN}')
+            VALUES( '${data.CVE_DOC}', '${data.ESTATUS}', '${data.CLAVE}', '${data.FECHA_INGRESO}',
+            '${data.FECHA_TERMINA}', '${data.CVE_VEND}', '${data.ID_SEDE}', '${data.SERIE}')
         `);
 
     let arrayNewOrden = newOrden.recordsets;

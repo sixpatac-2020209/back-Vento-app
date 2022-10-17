@@ -29,6 +29,7 @@ const ordenRoutes = require('../src/SQL/routes/VENTOAPP/orden.routes');
 const procesosRoutes = require('../src/SQL/routes/VENTOAPP/procesos.routes');
 const programaciónRoutes = require('../src/SQL/routes/VENTOAPP/programación.routes');
 const sedesRoutes = require('../src/SQL/routes/VENTOAPP/sedes.routes');
+const emailRoutes = require('../src/e-mail/routes/email.routes');
 
 ////////////////////////////////////////////
 
@@ -56,6 +57,9 @@ app.use('/ordenes', ordenRoutes);
 app.use('/procesos', procesosRoutes);
 app.use('/programaciones', programaciónRoutes);
 app.use('/plantas', sedesRoutes);
+
+/** NODEMAILER */
+app.use('/email', emailRoutes);
 
 ////////////////////////////////////////////
 exports.initServer = () => app.listen(port, async () => {

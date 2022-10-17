@@ -37,8 +37,9 @@ exports.getPedidosPorMes = async (req, res) => {
         let data = {
             DATED: params.DATED
         };
-        console.log(data.date)
-        let dateSplit = data.date.split('-');
+
+        console.log(data)
+        let dateSplit = data.DATED.split('-');
         let yearP = dateSplit[0];
         let monthP = dateSplit[1]
 
