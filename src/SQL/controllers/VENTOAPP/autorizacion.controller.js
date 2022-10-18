@@ -65,7 +65,6 @@ exports.Autorizar = async (req, res) => {
         let data = {
             FECHA: newOnlyDate[0],
             ID_USUARIO: localStorage
-
         }
 
         let autorizar = await sqlConfig.VENTO.query(`
@@ -92,5 +91,14 @@ exports.Autorizar = async (req, res) => {
         console.log(err);
         return res.status(500).send({ message: 'Error al autorizar la orden.' });
 
+    }
+}
+
+exports.getOrdenesAutorizadas = async (req,res)=>{
+    try {
+        
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send('Error al obtener los pedidos Autorizados')
     }
 }

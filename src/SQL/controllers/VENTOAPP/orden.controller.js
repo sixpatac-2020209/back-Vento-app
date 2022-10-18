@@ -209,7 +209,6 @@ exports.getImporteOrden = async (req, res) => {
         let arrayOrden = Orden.recordsets;
         let secondArray = arrayOrden[0]
         let returnImporte = secondArray[0];
-        console.log(returnImporte);
 
         if (returnImporte.length === 0) {
             return res.status(400).send({ message: 'Pedido no encontrado' });
