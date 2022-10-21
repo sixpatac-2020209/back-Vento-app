@@ -12,7 +12,5 @@ api.get('/getImporteOrden/:id', ordenController.getImporteOrden);
 
 
 api.post('/createOrden', ordenController.createOrden);
-api.put('/updateOrden', ordenController.updateOrden);
-api.delete('/deleteOrden', ordenController.deleteOrden);
 
-module.exports = api
+module.exports = api    

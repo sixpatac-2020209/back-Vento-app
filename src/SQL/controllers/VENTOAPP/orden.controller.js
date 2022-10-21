@@ -11,7 +11,10 @@ exports.ordenTest = async (req, res) => {
 exports.getOrdenes = async (req, res) => {
   try {
     let ordenes = await sqlConfig.VENTO.query(`
-        SELECT * FROM TBL_ORDEN
+        SELECT CVE_ORDEN, CVE_PEDIDO, ESTATUS, C.NOMBRE CLIENTE, FECHA_INGRESO, FECHA_TERMINA,  V.NOMBRE VENDEDOR, S.DESCRIPCION ID_SEDE, SERIE FROM TBL_ORDEN O
+        INNER JOIN TBL_SEDES S ON S.ID_SEDE = O.ID_SEDE
+        INNER JOIN SAE80Empre02.dbo.CLIE02 C ON LTRIM(RTRIM(C.CLAVE)) = O.CLIENTE
+        INNER JOIN SAE80Empre02.dbo.VEND02 V ON LTRIM(RTRIM(V.CVE_VEND)) = O.VENDEDOR
         `);
 
     let arrayOrdenes = ordenes.recordsets;
@@ -87,16 +90,26 @@ exports.createOrden = async (req, res) => {
       FECHA_TERMINA: dateString,
       ID_SEDE: params.ID_SEDE,
       SERIE: 'EXP',
+      AUTORIZACION: 0,
+      RECHAZO: 0
     }
 
     let msg = validateData(data);
     if (msg) return res.status(400).send(msg);
 
+    let validateOrder = await sqlConfig.VENTO.query(`
+          SELECT * FROM TBL_ORDEN WHERE CVE_PEDIDO = '${data.CVE_DOC}'
+      `);
+      
+      if(validateOrder.recordset.length !== 0){
+        return res.status(400).send({message: 'Orden creada anteriormente'});
+      }
+
     let newOrden = await sqlConfig.VENTO.query(`
-            INSERT INTO TBL_ORDEN
+            INSERT INTO TBL_ORDEN (CVE_PEDIDO, ESTATUS, CLIENTE, FECHA_INGRESO, FECHA_TERMINA, VENDEDOR, ID_SEDE, SERIE, AUTORIZACIÓN,RECHAZO)
             VALUES( '${data.CVE_DOC}', '${data.ESTATUS}', '${data.CLAVE}', '${data.FECHA_INGRESO}',
-            '${data.FECHA_TERMINA}', '${data.CVE_VEND}', '${data.ID_SEDE}', '${data.SERIE}')
-        `);
+            '${data.FECHA_TERMINA}', '${data.CVE_VEND}', '${data.ID_SEDE}', '${data.SERIE}', '${data.AUTORIZACION}', '${data.RECHAZO}')
+      `);
 
     let arrayNewOrden = newOrden.recordsets;
     let returnNewOrden = arrayNewOrden[0];
@@ -106,63 +119,17 @@ exports.createOrden = async (req, res) => {
     } else {
       return res.send({ message: 'Orden creada Satisfactoriamente', returnNewOrden });
     }
+
   } catch (err) {
     console.log(err);
     return res.status(500).send({ message: 'Error al crear la Orden' });
   }
 }
 
-
-exports.updateOrden = async (req, res) => {
+exports.getDetalleOrden = async (req, res) => {
   try {
     let id = req.params.id;
-
-    let params = req.body
-    let data = {
-      ESTATUS: params.ESTATUS
-    }
-
-    let ordenUpdated = await sqlConfig.VENTO.query(`
-            UPDATE TBL_ORDEN SET ESTATUS = '${data.ESTATUS}'
-            WHERE LTRIM(RTRIM(CVE_ORDEN)) = '${id}'
-        `);
-
-    if (!ordenUpdated) {
-      return res.status(400).send({ message: 'Orden no actualizada' })
-    } else {
-      return res.send({ returnOrdenUpdated });
-    }
-  } catch (err) {
-    console.log(err)
-    return res.status(500).send({ message: 'Error al actualizar la Orden' });
-  }
-}
-
-exports.deleteOrden = async (req, res) => {
-  try {
-    let id = req.params.id
-    let ordenDeleted = await sqlConfig.VENTO.query(`
-        DELETE FROM TBL_ORDEN WHERE LTRIM(RTRIM(CVE_ORDEN)) = '${id}'
-        `);
-
-    let arrayOrdenDeleted = ordenDeleted.recordsets;
-    let returnOrdenDeleted = arrayOrdenDeleted[0];
-
-    if (!ordenDeleted) {
-      return res.status(400).send({ message: 'Orden no encontrada' })
-    } else {
-      return res.send({ message: 'Orden eliminada correctamente' });
-    }
-  } catch (err) {
-    console.log(err)
-    return res.status(500).send({ message: 'Error al eliminar la Orden' });
-  }
-}
-
-exports.getDetalleOrden = async (req, res) => {
-    try {
-        let id = req.params.id;
-        let Orden = await sqlConfig.SAE.query(`
+    let Orden = await sqlConfig.SAE.query(`
           SELECT F.CVE_ART,I.DESCR, O.STR_OBS,F.CANT,
             CONCAT('$.', CONVERT(VARCHAR(50), CAST(ROUND(F.PREC/P.TIPCAMB, 2, 1) AS MONEY ),1)) PRECIO ,
             CONCAT('$.', CONVERT(VARCHAR(50), CAST(ROUND((F.CANT*F.PREC)/P.TIPCAMB, 2, 1) AS MONEY ),1)) SUBTOTAL,
@@ -175,27 +142,27 @@ exports.getDetalleOrden = async (req, res) => {
             INNER JOIN VENTOAPP.dbo.TBL_ORDEN A ON P.CVE_DOC=A.CVE_PEDIDO
             WHERE A.CVE_ORDEN = '${id}'`);
 
-        let arrayOrden = Orden.recordsets;
-        let returnDetalle = arrayOrden[0];
+    let arrayOrden = Orden.recordsets;
+    let returnDetalle = arrayOrden[0];
 
-        if (returnDetalle.length === 0) {
-            return res.status(400).send({ message: 'Pedido no encontrado' });
-        }
-        else {
-            return res.send({ message: 'Pedido encontrado', returnDetalle });
-        }
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send({ message: 'Error al obtener el Detalle de Pedido' })
+    if (returnDetalle.length === 0) {
+      return res.status(400).send({ message: 'Pedido no encontrado' });
     }
+    else {
+      return res.send({ message: 'Pedido encontrado', returnDetalle });
+    }
+
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send({ message: 'Error al obtener el Detalle de Pedido' })
+  }
 }
 
 
 exports.getImporteOrden = async (req, res) => {
-    try {
-        let id = req.params.id;
-        let Orden = await sqlConfig.SAE.query(`
+  try {
+    let id = req.params.id;
+    let Orden = await sqlConfig.SAE.query(`
           SELECT 
             CONCAT('$.', CONVERT(VARCHAR(50), CAST(ROUND(P.IMPORTE/P.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE
 
@@ -206,19 +173,19 @@ exports.getImporteOrden = async (req, res) => {
             INNER JOIN VENTOAPP.dbo.TBL_ORDEN A ON P.CVE_DOC=A.CVE_PEDIDO
             WHERE A.CVE_ORDEN = '${id}'`);
 
-        let arrayOrden = Orden.recordsets;
-        let secondArray = arrayOrden[0]
-        let returnImporte = secondArray[0];
+    let arrayOrden = Orden.recordsets;
+    let secondArray = arrayOrden[0]
+    let returnImporte = secondArray[0];
 
-        if (returnImporte.length === 0) {
-            return res.status(400).send({ message: 'Pedido no encontrado' });
-        }
-        else {
-            return res.send({ message: 'Pedido encontrado', returnImporte });
-        }
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send({ message: 'Error al obtener el Detalle de Pedido' })
+    if (returnImporte.length === 0) {
+      return res.status(400).send({ message: 'Pedido no encontrado' });
     }
+    else {
+      return res.send({ message: 'Pedido encontrado', returnImporte });
+    }
+
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send({ message: 'Error al obtener el Detalle de Pedido' })
+  }
 }

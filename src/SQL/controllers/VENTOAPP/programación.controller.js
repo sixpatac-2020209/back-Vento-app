@@ -62,9 +62,9 @@ exports.getProgramacion = async (req, res) => {
 exports.createProgramacion = async (req, res) => {
     try {
 
+        let id = req.params.id
         let params = req.body
         let data = {
-            CVE_ORDEN: params.CVE_ORDEN,
             FECHA_INGRESO: params.FECHA_INGRESO,
             FECHA_TERMINA: params.FECHA_TERMINA,
             ID_SEDE: params.ID_SEDE,
@@ -74,7 +74,7 @@ exports.createProgramacion = async (req, res) => {
 
         let newProgramacion = await sqlConfig.VENTO.query(`
             INSERT INTO TBL_PROGRAMACION 
-            VALUE('${data.CVE_ORDEN}','${data.FECHA_INGRESO}','${data.FECHA_TERMINA}','${data.ID_SEDE}');
+            VALUE('${id}','${data.FECHA_INGRESO}','${data.FECHA_TERMINA}','${data.ID_SEDE}');
         `);
 
         let arraynewProgramacion = newProgramacion.recordsets;

@@ -65,7 +65,7 @@ app.use('/email', emailRoutes);
 exports.initServer = () => app.listen(port, async () => {
     const automaticUser = {
         username: 'SuperAdmin',
-        email: 'admin@vento.com.gt',
+        email: '    ',
         name: 'SuperAdmin',
         surname: 'SuperAdmin',
         phone: 'SuperAdmin',

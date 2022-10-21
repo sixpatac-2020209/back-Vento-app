@@ -1,7 +1,7 @@
 'use strict'
 
 const User = require('../models/usuario.model');
-const { validateData, encrypt, alreadyUser,
+const { validateData, encrypt, alreadyUser, alreadyUserEmail,
     checkPassword, checkUpdate, checkPermission,
     checkUpdateAdmin } = require('../utils/validate');
 const jwt = require('../services/jwt')
@@ -15,13 +15,13 @@ exports.login = async (req, res) => {
     try {
         const params = req.body;
         let data = {
-            username: params.username,
+            email: params.email,
             password: params.password
         }
         let msg = validateData(data);
 
         if (msg) return res.status(400).send(msg);
-        let already = await alreadyUser(params.username);
+        let already = await alreadyUserEmail(params.email);
         if (already && await checkPassword(data.password, already.password)) {
             let token = await jwt.createToken(already);
             delete already.password;
@@ -47,7 +47,7 @@ exports.addUser = async (req, res) => {
             role: params.role
         }
 
-        if (data.role === 'OPERARIO' || data.role === 'JEFE') {
+        if (data.role === 'SUPERVISOR' || data.role === 'JEFEPRODUCCION' || data.role === 'LOGISTICA' || data.role === 'IT') {
             const msg = validateData(data);
             if (msg) return res.status(400).send(msg);
 
@@ -134,72 +134,3 @@ exports.getUsers = async (req, res) => {
         return res.status(500).send({ message: 'Error obteniendo los usuarios.' });
     }
 }
-
-
-
-// OPTIONS TABLES USER
-exports.AtoZnameUser = async (req, res) => {
-    try {
-        const users = await User.find({ $or: [{ role: 'OPERARIO' }, { role: 'JEFE' }] }).sort({ name: 'asc' });
-        return res.send({ users });
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send({ message: 'Error getting Users.', err });
-    }
-};
-
-exports.ZtoAnameUser = async (req, res) => {
-    try {
-        const users = await User.find({ $or: [{ role: 'OPERARIO' }, { role: 'JEFE' }] }).sort({ name: 'desc' });
-        return res.send({ users });
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send({ message: 'Error getting Users.', err });
-    }
-};
-
-exports.AtoZsurnameUser = async (req, res) => {
-    try {
-        const users = await User.find({ $or: [{ role: 'CLIENTE' }, { role: 'ORGANIZADOR' }] }).sort({ surname: 'asc' });
-        return res.send({ users });
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send({ message: 'Error getting Users.', err });
-    }
-}
-
-exports.ZtosurnameAUser = async (req, res) => {
-    try {
-        const users = await User.find({ $or: [{ role: 'CLIENTE' }, { role: 'ORGANIZADOR' }] }).sort({ surname: 'desc' });
-        return res.send({ users });
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send({ message: 'Error getting Users.', err });
-    }
-}
-
-exports.AtoZroleUser = async (req, res) => {
-    try {
-        const users = await User.find({ $or: [{ role: 'CLIENTE' }, { role: 'ORGANIZADOR' }] }).sort({ role: 'asc' });
-        return res.send({ users });
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send({ message: 'Error getting Users.', err });
-    }
-};
-
-exports.ZtoAroleUser = async (req, res) => {
-    try {
-        const users = await User.find({ $or: [{ role: 'CLIENTE' }, { role: 'ORGANIZADOR' }] }).sort({ role: 'desc' });
-        return res.send({ users });
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).send({ message: 'Error getting Users.', err });
-    }
-};
