@@ -11,20 +11,23 @@ exports.pedidosTest = async (req, res) => {
 exports.getPedidos = async (req, res) => {
     try {
         const hoy = Date.now();
-    const newDate = new Date(hoy)
-    let dateString = newDate.toLocaleDateString()
-    let dateSplit = dateString.split('/');
-    let month = dateSplit[1]
+        const newDate = new Date(hoy)
+        let dateString = newDate.toLocaleDateString()
+        let dateSplit = dateString.split('/');
+        let month = dateSplit[1]
+        let year = dateSplit[2]
 
         let Pedidos = await sqlConfig.SAE.query(`
         SELECT F.CVE_DOC,  CONCAT('$. ', CONVERT(VARCHAR(50), CAST(ROUND(F.IMPORTE/F.TIPCAMB, 2, 1) AS MONEY ),1)) IMPORTE ,
         F.CVE_CLPV, C.NOMBRE, F.CVE_VEND, V.NOMBRE, F.SERIE FROM FACTP02 F
         INNER JOIN VEND02 V ON F.CVE_VEND = V.CVE_VEND
         INNER JOIN CLIE02 C ON C.CLAVE = F.CVE_CLPV
-		WHERE F.SERIE = 'EXP' AND F.STATUS <> 'C' AND MONTH(F.FECHA_DOC) = '${month}'`);
+		WHERE F.SERIE = 'EXP' AND F.STATUS <> 'C' AND MONTH(F.FECHA_DOC) = '${month}' and YEAR(F.FECHA_DOC)='${year}'`);
 
         let arrayPedidos = Pedidos.recordsets;
         let returnPedidos = arrayPedidos[0];
+        console.log(returnPedidos.length);
+        
         if (!returnPedidos) {
             return res.status(400).send({ message: 'Pedidos no encontrados' });
         } else {

@@ -37,7 +37,9 @@ exports.getDetalleProceso = async (req, res) => {
         let id = req.params.id
 
         let detalleProceso = await sqlConfig.VENTO.query(`
-        SELECT * FROM TBL_DETALLEPROCESOS WHERE LTRIM(RTRIM(ID_DETALLEPROCESO)) = ${id}
+        SELECT D.REALIZAR, D.REALIZADO, P.DESCRIPCION , D.ID_PROCESO FROM TBL_DETALLEPROCESOS D
+        INNER JOIN TBL_PROCESOS P ON D.ID_PROCESO = P.ID_PROCESO
+        WHERE D.CVE_ART = '${id}'
         `);
 
         let arrayDetalleProceso = detalleProceso.recordsets;
@@ -54,5 +56,28 @@ exports.getDetalleProceso = async (req, res) => {
         console.log(err);
         return res.status(500).send({ message: 'Error al obtener la DetalleProceso' });
 
+    }
+}
+
+exports.corteVidrio = async (req, res)=>{
+    try {
+        let params = req.params.id
+        let data={
+            corte : params.corte
+        }
+
+        let corteVidrio = await sqlConfig.VENTO.query(`
+            SELECT REALIZADO FROM TBL_DETALLEPROCESO
+        `);
+        let arrayDetalle = corteVidrio.recordsets
+        let secondArray = arrayDetalle[0]
+        let returnDetalle = secondArray[0];
+        
+        console.log(returnDetalle);
+
+        
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send({message: 'Error al ingresar ingresar los valores'})
     }
 }

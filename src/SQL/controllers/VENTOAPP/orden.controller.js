@@ -19,7 +19,7 @@ exports.getOrdenes = async (req, res) => {
 
     let arrayOrdenes = ordenes.recordsets;
     let returnOrdenes = arrayOrdenes[0];
-
+    console.log(returnOrdenes.length)
     if (!ordenes) {
       return res.status(400).send({ message: 'Ordenes no encontradas' });
 
@@ -88,10 +88,10 @@ exports.createOrden = async (req, res) => {
       ESTATUS: 1,
       FECHA_INGRESO: dateString,
       FECHA_TERMINA: dateString,
+
       ID_SEDE: params.ID_SEDE,
       SERIE: 'EXP',
       AUTORIZACION: 0,
-      RECHAZO: 0
     }
 
     let msg = validateData(data);
@@ -106,10 +106,10 @@ exports.createOrden = async (req, res) => {
       }
 
     let newOrden = await sqlConfig.VENTO.query(`
-            INSERT INTO TBL_ORDEN (CVE_PEDIDO, ESTATUS, CLIENTE, FECHA_INGRESO, FECHA_TERMINA, VENDEDOR, ID_SEDE, SERIE, AUTORIZACIÓN,RECHAZO)
+            INSERT INTO TBL_ORDEN (CVE_PEDIDO, ESTATUS, CLIENTE, FECHA_INGRESO, FECHA_TERMINA, VENDEDOR, ID_SEDE, SERIE)
             VALUES( '${data.CVE_DOC}', '${data.ESTATUS}', '${data.CLAVE}', '${data.FECHA_INGRESO}',
-            '${data.FECHA_TERMINA}', '${data.CVE_VEND}', '${data.ID_SEDE}', '${data.SERIE}', '${data.AUTORIZACION}', '${data.RECHAZO}')
-      `);
+            '${data.FECHA_TERMINA}', '${data.CVE_VEND}', '${data.ID_SEDE}', '${data.SERIE}');      
+            `);
 
     let arrayNewOrden = newOrden.recordsets;
     let returnNewOrden = arrayNewOrden[0];
@@ -188,4 +188,23 @@ exports.getImporteOrden = async (req, res) => {
     console.log(err)
     return res.status(500).send({ message: 'Error al obtener el Detalle de Pedido' })
   }
+}
+
+exports.getOrders = async(req, res) =>
+{
+    try 
+    {
+        let orders = await sqlConfig.VENTO.query(
+            `SELECT * FROM TBL_ORDEN`);
+        
+        let arrayOrders = orders.recordsets
+        let returnOrders = arrayOrders[0];
+
+        return res.send({returnOrders});
+    } 
+    catch (err) 
+    {
+        console.log(err);
+        return res.status(500).send({message: 'Error al Obtener las ordenes.'})    
+    }
 }

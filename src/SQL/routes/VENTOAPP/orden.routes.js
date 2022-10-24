@@ -10,6 +10,7 @@ api.get('/getOrden/:id', ordenController.getOrden);
 api.get('/getDetalleOrden/:id', ordenController.getDetalleOrden);
 api.get('/getImporteOrden/:id', ordenController.getImporteOrden);
 
+api.get('/getOrders', ordenController.getOrders);
 
 api.post('/createOrden', ordenController.createOrden);
 

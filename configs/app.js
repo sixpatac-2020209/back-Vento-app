@@ -29,6 +29,9 @@ const ordenRoutes = require('../src/SQL/routes/VENTOAPP/orden.routes');
 const procesosRoutes = require('../src/SQL/routes/VENTOAPP/procesos.routes');
 const programaciónRoutes = require('../src/SQL/routes/VENTOAPP/programación.routes');
 const sedesRoutes = require('../src/SQL/routes/VENTOAPP/sedes.routes');
+const userSAERoutes = require('../src/SQL/routes/VENTOAPP/usuarios.routes')
+const ordenFabricacion = require('../src/SQL/routes/VENTOAPP/ordenesFabricacion.routes')
+/** NODEMAILER */
 const emailRoutes = require('../src/e-mail/routes/email.routes');
 
 ////////////////////////////////////////////
@@ -57,6 +60,9 @@ app.use('/ordenes', ordenRoutes);
 app.use('/procesos', procesosRoutes);
 app.use('/programaciones', programaciónRoutes);
 app.use('/plantas', sedesRoutes);
+app.use('/userSAE', userSAERoutes);
+app.use('/ordenesFabricacion', ordenFabricacion);
+
 
 /** NODEMAILER */
 app.use('/email', emailRoutes);

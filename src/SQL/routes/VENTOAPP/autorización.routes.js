@@ -12,6 +12,6 @@ api.get('/getDetalleAutorizacion/:id', autorizacionController.getDetalleAutoriza
 api.get('/getImporteAutorizacion/:id', autorizacionController.getImporteAutorizacion);
 
 api.put('/autorizar/:id', autorizacionController.Autorizar);
-
+api.delete('/rechazar/:id', autorizacionController.Rechazar);
 
 module.exports = api
