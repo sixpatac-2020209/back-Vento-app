@@ -11,17 +11,17 @@ exports.addUserSQL = async (req, res) => {
     try {
         const params = req.body;
         const data = {
-            nombre: params.name,
-            apellido: params.surname,
-            contraseña: params.password,
-            correo: params.correo,
+            name: params.name,
+            surname: params.surname,
+            password: params.password,
+            email: params.email,
             role: params.role
         }
         let msg = validateData(data);
         if (msg) return res.status(400).send(msg);
 
         let validateUser = await sqlConfig.VENTO.query(`
-          SELECT * FROM TBL_USUARIOS WHERE CORREO = '${data.correo}'
+          SELECT * FROM TBL_USUARIOS WHERE CORREO = '${data.email}'
         `);
         if (validateUser.recordset.length !== 0) {
             return res.status(400).send({ message: 'Usuario creado anteriormente' });
@@ -29,7 +29,7 @@ exports.addUserSQL = async (req, res) => {
 
         let newUserSAE = await sqlConfig.VENTO.query(`
             INSERT INTO TBL_USUARIOS ( NOMBRE, APELLIDO , CONTRASENIA, CORREO, ROL)
-            VALUES ('${data.nombre}', '${data.apellido}', ${data.contraseña} ,'${data.correo}','${data.role}');
+            VALUES ('${data.name}', '${data.surname}', ${data.password} ,'${data.email}','${data.role}');
         `)
 
         let arrayUser = newUserSAE.recordsets;

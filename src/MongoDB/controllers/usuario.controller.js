@@ -40,10 +40,11 @@ exports.addUser = async (req, res) => {
     try {
         const params = req.body;
         const data = {
-            nombre: params.name,
-            apellido: params.surname,
-            contraseña: params.password,
-            usuario: params.username,
+            name: params.name,
+            surname: params.surname,
+            password: params.password,
+            username: params.username,
+            email: params.email,
             role: params.role
         }
 
