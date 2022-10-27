@@ -6,8 +6,8 @@ const api = express.Router();
 const mdAuth = require('../../middlewares/authenticated');
 
 api.get('/detalleProcesosTest', mdAuth.ensureAuth, detalleProcesosController.detalleProcesosTest);
-api.get('/getDetallesProcesos', mdAuth.ensureAuth, detalleProcesosController.getDetallesProcesos);
-api.get('/getDetalleProceso/:id', mdAuth.ensureAuth, detalleProcesosController.getDetalleProceso);
+api.get('/getDetallesProcesos', detalleProcesosController.getDetallesProcesos);
+api.get('/getDetalleProceso/:id', detalleProcesosController.getDetalleProceso);
 
 /** ---------- DETALLE DE PROCESOS ---------- **/
 api.put('/corteVidrio/:id', detalleProcesosController.corteVidrio);// --1
@@ -28,6 +28,4 @@ api.put('/colocacionBatiente/:id', detalleProcesosController.colocacionBatiente)
 api.put('/tapajambas/:id', detalleProcesosController.tapajambas);//--13
 api.put('/reticula/:id', detalleProcesosController.reticula);//--14
 
-api.put('/armado/:id', detalleProcesosController.armado);//--15
-
-module.exports = api
+module.exports = api        

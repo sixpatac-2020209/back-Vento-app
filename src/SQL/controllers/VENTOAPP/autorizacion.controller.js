@@ -195,6 +195,8 @@ exports.Rechazar = async (req, res) => {
 
 
 
+
+
 exports.getOrdenesAutorizadas = async (req, res) => {
     try {
         let autorizaciones = await sqlConfig.VENTO.query(`SELECT * FROM TBL_AUTORIZACION WHERE STATUS = '1'`);

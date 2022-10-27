@@ -5,7 +5,8 @@ const ordenFabriController = require('../../controllers/VENTOAPP/ordenesFabricac
 const api = express.Router();
 const mdAuth = require('../../middlewares/authenticated');
 
-api.get('/getOrdenesFabricacion', ordenFabriController.getOrdenesFabri);
+api.get('/getOrdenesFabricacion', mdAuth.ensureAuth,ordenFabriController.getOrdenesFabri);
+api.get('/ordenesOperarios', )
 api.get('/getOrdenFabricacion', mdAuth.ensureAuth, ordenFabriController.getOrdenFabri);
 api.get('/getDetalleOrdenF', mdAuth.ensureAuth, ordenFabriController.getDetalleOrdenFabri);
 

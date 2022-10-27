@@ -48,11 +48,12 @@ exports.addUser = async (req, res) => {
             role: params.role
         }
 
-        if (data.role === 'SUPERVISOR' ||
+        if (
             data.role === 'JEFEPRODUCCION' ||
             data.role === 'LOGISTICA' ||
             data.role === 'IT' ||
-            data.role === 'GERENTECOMERCIAL'
+            data.role === 'GERENTECOMERCIAL'||
+            data.role === 'DISEÑO'
         ) {
             const msg = validateData(data);
             if (msg) return res.status(400).send(msg);
