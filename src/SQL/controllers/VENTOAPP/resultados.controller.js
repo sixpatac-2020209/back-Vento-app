@@ -76,10 +76,8 @@ exports.updateDetalles = async (req, res) => {
                 WHERE CVE_ORDEN = ${id}
         `);
         
-
         if (!updateDetalle)
             return res.status(400).send({ message: 'update no ejecutado' });
-
 
     } catch (err) {
         console.log(err)

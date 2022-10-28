@@ -32,7 +32,7 @@ const sedesRoutes = require('../src/SQL/routes/VENTOAPP/sedes.routes');
 const userSAERoutes = require('../src/SQL/routes/VENTOAPP/usuarios.routes')
 const ordenFabricacionRoutes = require('../src/SQL/routes/VENTOAPP/ordenesFabricacion.routes');
 const resultadosRoutes = require('../src/SQL/routes/VENTOAPP/resultados.routes');
-
+const spRoutes = require('../src/SQL/routes/VENTOAPP/SP.routes.js')
 /** NODEMAILER */
 const emailRoutes = require('../src/e-mail/routes/email.routes');
 
@@ -65,7 +65,7 @@ app.use('/plantas', sedesRoutes);
 app.use('/userSAE', userSAERoutes);
 app.use('/ordenesFabricacion', ordenFabricacionRoutes);
 app.use('/resultados', resultadosRoutes);
-
+app.use('/sp', spRoutes);
 
 /** NODEMAILER */
 app.use('/email', emailRoutes);

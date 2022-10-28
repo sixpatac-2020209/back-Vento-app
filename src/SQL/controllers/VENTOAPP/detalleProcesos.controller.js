@@ -118,7 +118,7 @@ exports.corteVidrio = async (req, res) => {
 exports.corteHoja = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.body
         let data = {
             corteH: params.corteH
         }
@@ -152,6 +152,10 @@ exports.corteHoja = async (req, res) => {
             REALIZADO = ${result}
             WHERE WHERE ID_PROCESO = 2 AND CVE_ART = '${id}'
         `);
+        let arrayUpdate = corteHoja.recordsets
+        let returnDetalleUpdate = arrayUpdate[0];
+        console.log(returnDetalleUpdate);
+
         if (!corteHoja)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
@@ -166,7 +170,7 @@ exports.corteHoja = async (req, res) => {
 exports.corteMarco = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.params
         let data = {
             corteM: params.corteM
         }
@@ -213,7 +217,7 @@ exports.corteMarco = async (req, res) => {
 exports.corteCedazo = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.body
         let data = {
             corteC: params.corteC
         }
@@ -265,7 +269,7 @@ exports.corteCedazo = async (req, res) => {
 exports.fusionHoja = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.body
         let data = {
             fusionF: params.fusionH
         }
@@ -311,7 +315,7 @@ exports.fusionHoja = async (req, res) => {
 exports.fusionMarco = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.body
         let data = {
             fusionM: params.fusionM
         }
@@ -358,7 +362,7 @@ exports.fusionMarco = async (req, res) => {
 exports.fusionCedazo = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.body
         let data = {
             fusionC: params.fusionC
         }
@@ -410,7 +414,7 @@ exports.fusionCedazo = async (req, res) => {
 exports.limpiezaHoja = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.body
         let data = {
             limpiezaH: params.limpiezaH
         }
@@ -457,7 +461,7 @@ exports.limpiezaHoja = async (req, res) => {
 exports.limpiezaMarco = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.body
         let data = {
             limpiezaM: params.limpiezaM
         }
@@ -504,7 +508,7 @@ exports.limpiezaMarco = async (req, res) => {
 exports.colocacionTela = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.body
         let data = {
             colocacionTela: params.colocacionTela
         }
@@ -554,7 +558,7 @@ exports.colocacionTela = async (req, res) => {
 exports.corteBatiente = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.body
         let data = {
             corteBatiente: params.corteBatiente
         }
@@ -601,7 +605,7 @@ exports.corteBatiente = async (req, res) => {
 exports.colocacionBatiente = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.body
         let data = {
             colocacionBatiente: params.colocacionBatiente
         }
@@ -648,7 +652,7 @@ exports.colocacionBatiente = async (req, res) => {
 exports.tapajambas = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.body
         let data = {
             tapajambas: params.tapajambas
         }
@@ -695,7 +699,7 @@ exports.tapajambas = async (req, res) => {
 exports.reticula = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params.id
+        let params = req.body
         let data = {
             reticula: params.reticula
         }

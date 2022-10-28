@@ -5,7 +5,7 @@ const detalleProcesosController = require('../../controllers/VENTOAPP/detallePro
 const api = express.Router();
 const mdAuth = require('../../middlewares/authenticated');
 
-api.get('/detalleProcesosTest', mdAuth.ensureAuth, detalleProcesosController.detalleProcesosTest);
+api.get('/detalleProcesosTest', detalleProcesosController.detalleProcesosTest);
 api.get('/getDetallesProcesos', detalleProcesosController.getDetallesProcesos);
 api.get('/getDetalleProceso/:id', detalleProcesosController.getDetalleProceso);
 
