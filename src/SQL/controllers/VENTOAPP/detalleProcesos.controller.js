@@ -122,16 +122,19 @@ exports.corteHoja = async (req, res) => {
         let data = {
             corteH: params.corteH
         }
+
         let msg = validateData(data);
         if (msg) return res.status(400).send(msg);
 
         let dataCorteHoja = await sqlConfig.VENTO.query(`
-            SELECT Pedido SAE, REALIZADO FROM TBL_DETALLEPROCESOS
+            SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
 		    WHERE ID_PROCESO = 2 AND CVE_ART = '${id}'
         `);
         let arrayDetalle = dataCorteHoja.recordsets
         let secondArray = arrayDetalle[0]
         let returnDetalle = secondArray[0];
+
+        console.log(returnDetalle.REALIZAR);
 
         if (!dataCorteHoja)
             return res.status(400).send({ message: 'Corte de vidrio no encontrado' });
@@ -150,16 +153,15 @@ exports.corteHoja = async (req, res) => {
         let corteHoja = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET 
             REALIZADO = ${result}
-            WHERE WHERE ID_PROCESO = 2 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 2 AND CVE_ART = '${id}'
         `);
         let arrayUpdate = corteHoja.recordsets
         let returnDetalleUpdate = arrayUpdate[0];
-        console.log(returnDetalleUpdate);
 
         if (!corteHoja)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        return res.send({ message: 'Proceso guardado correctamente'});
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);
@@ -170,7 +172,7 @@ exports.corteHoja = async (req, res) => {
 exports.corteMarco = async (req, res) => {
     try {
         let id = req.params.id
-        let params = req.params
+        let params = req.body
         let data = {
             corteM: params.corteM
         }
@@ -201,7 +203,7 @@ exports.corteMarco = async (req, res) => {
 
         let corteMarco = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
-            WHERE WHERE ID_PROCESO = 3 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 3 AND CVE_ART = '${id}'
         `);
         if (!corteMarco)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
@@ -248,7 +250,7 @@ exports.corteCedazo = async (req, res) => {
 
         let corteCedazo = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
-            WHERE WHERE ID_PROCESO = 4 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 4 AND CVE_ART = '${id}'
         `);
         if (!corteCedazo)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
@@ -299,7 +301,7 @@ exports.fusionHoja = async (req, res) => {
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
         let fusionHoja = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
-            WHERE WHERE ID_PROCESO = 5 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 5 AND CVE_ART = '${id}'
         `);
         if (!fusionHoja)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
@@ -319,6 +321,7 @@ exports.fusionMarco = async (req, res) => {
         let data = {
             fusionM: params.fusionM
         }
+
         let msg = validateData(data);
         if (msg) return res.status(400).send(msg);
 
@@ -346,7 +349,7 @@ exports.fusionMarco = async (req, res) => {
 
         let fusionMarco = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
-            WHERE WHERE ID_PROCESO = 6 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 6 AND CVE_ART = '${id}'
         `);
         if (!fusionMarco)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
@@ -393,7 +396,7 @@ exports.fusionCedazo = async (req, res) => {
 
         let fusionCedazo = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
-            WHERE WHERE ID_PROCESO = 7 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 7 AND CVE_ART = '${id}'
         `);
         if (!fusionCedazo)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
@@ -445,7 +448,7 @@ exports.limpiezaHoja = async (req, res) => {
 
         let limpiezaHoja = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
-            WHERE WHERE ID_PROCESO = 8 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 8 AND CVE_ART = '${id}'
         `);
         if (!limpiezaHoja)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
@@ -492,7 +495,7 @@ exports.limpiezaMarco = async (req, res) => {
 
         let limpiezaMarco = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
-            WHERE WHERE ID_PROCESO = 9 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 9 AND CVE_ART = '${id}'
         `);
         if (!limpiezaMarco)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
@@ -538,7 +541,7 @@ exports.colocacionTela = async (req, res) => {
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
         let colocacionTela = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
-            WHERE WHERE ID_PROCESO = 10 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 10 AND CVE_ART = '${id}'
         `);
         if (!colocacionTela)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
@@ -589,7 +592,7 @@ exports.corteBatiente = async (req, res) => {
 
         let corteBatiente = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
-            WHERE WHERE ID_PROCESO = 11 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 11 AND CVE_ART = '${id}'
         `);
         if (!corteBatiente)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
@@ -636,7 +639,7 @@ exports.colocacionBatiente = async (req, res) => {
 
         let colocacionBatiente = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
-            WHERE WHERE ID_PROCESO = 12 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 12 AND CVE_ART = '${id}'
         `);
         if (!colocacionBatiente)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
@@ -683,7 +686,7 @@ exports.tapajambas = async (req, res) => {
 
         let tapajambas = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
-            WHERE WHERE ID_PROCESO = 13 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 13 AND CVE_ART = '${id}'
         `);
         if (!tapajambas)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
@@ -730,7 +733,7 @@ exports.reticula = async (req, res) => {
 
         let reticula = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
-            WHERE WHERE ID_PROCESO = 14 AND CVE_ART = '${id}'
+            WHERE ID_PROCESO = 14 AND CVE_ART = '${id}'
         `);
         if (!reticula)
             return res.status(400).send({ message: 'Cantidad no ingresada' });

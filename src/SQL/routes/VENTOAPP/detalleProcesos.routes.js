@@ -16,8 +16,8 @@ api.put('/corteMarco/:id', detalleProcesosController.corteMarco);//--3
 api.put('/corteCedazo/:id', detalleProcesosController.corteCedazo);//--4
 
 api.put('/fusionHoja/:id', detalleProcesosController.fusionHoja);//--5
-api.put('/fusionCedazo/:id', detalleProcesosController.fusionMarco);//--6
-api.put('/fusionMarco/:id', detalleProcesosController.fusionCedazo);//--7
+api.put('/fusionMarco/:id', detalleProcesosController.fusionMarco);//--6
+api.put('/fusionCedazo/:id', detalleProcesosController.fusionCedazo);//--7
 
 api.put('/limpiezaHoja/:id', detalleProcesosController.limpiezaHoja);//--8
 api.put('/limpiezaMarco/:id', detalleProcesosController.limpiezaMarco);//--9
