@@ -72,18 +72,14 @@ exports.updateDetalles = async (req, res) => {
             UPDATE TBL_DETALLEPROCESOS
             SET PORCENTAJE=(D.REALIZADO*P.CUMPLIMIENTO)/D.REALIZAR
             FROM TBL_DETALLEPROCESOS D
-            INNER JOIN TBL_PROCESOS P ON D.ID_PROCESO=P.ID_PROCESO 
-                WHERE CVE_ORDEN='${id}'
+            INNER JOIN TBL_PROCESOS P ON D.ID_PROCESO = P.ID_PROCESO 
+                WHERE CVE_ORDEN = ${id}
         `);
+        
 
         if (!updateDetalle)
-            return res.status(400).send({ message: 'Cantidad no ingresada' });
+            return res.status(400).send({ message: 'update no ejecutado' });
 
-        let arrayUpdate = updateDetalle.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnPorcentaje = secondArrayUpdate[0];
-
-        return res.send({ returnPorcentaje });
 
     } catch (err) {
         console.log(err)

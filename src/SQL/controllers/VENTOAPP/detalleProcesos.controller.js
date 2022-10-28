@@ -39,7 +39,7 @@ exports.getDetalleProceso = async (req, res) => {
         let id = req.params.id
 
         let detalleProceso = await sqlConfig.VENTO.query(`
-        SELECT D.CVE_ART, D.REALIZAR, D.REALIZADO, P.DESCRIPCION , D.ID_PROCESO FROM TBL_DETALLEPROCESOS D
+        SELECT D.CVE_ORDEN, D.CVE_ART, D.REALIZAR, D.REALIZADO, P.DESCRIPCION , D.ID_PROCESO FROM TBL_DETALLEPROCESOS D
         INNER JOIN TBL_PROCESOS P ON D.ID_PROCESO = P.ID_PROCESO
         WHERE D.CVE_ART = '${id}'
         `);
@@ -63,10 +63,6 @@ exports.getDetalleProceso = async (req, res) => {
 
 
 
-
-
-
-
 /** ---------------------- CORTE ---------------------- **/
 
 exports.corteVidrio = async (req, res) => {
@@ -76,6 +72,8 @@ exports.corteVidrio = async (req, res) => {
         let data = {
             corte: params.corteV
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataCorteVidrio = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -122,8 +120,10 @@ exports.corteHoja = async (req, res) => {
         let id = req.params.id
         let params = req.params.id
         let data = {
-            corte: params.corteH
+            corteH: params.corteH
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataCorteHoja = await sqlConfig.VENTO.query(`
             SELECT Pedido SAE, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -136,28 +136,26 @@ exports.corteHoja = async (req, res) => {
         if (!dataCorteHoja)
             return res.status(400).send({ message: 'Corte de vidrio no encontrado' });
 
-        if (parseInt(data.corte) > parseInt(returnDetalle.REALIZAR))
+        if (parseInt(data.corteH) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' });
 
         if (returnDetalle.REALIZADO == returnDetalle.REALIZAR)
             return res.status(400).send({ message: 'No puedes ingresar más datos' })
 
-        let result = parseInt(data.corte) + parseInt(returnDetalle.REALIZADO);
+        let result = parseInt(data.corteH) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
 
         let corteHoja = await sqlConfig.VENTO.query(`
-            UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
+            UPDATE TBL_DETALLEPROCESOS SET 
+            REALIZADO = ${result}
             WHERE WHERE ID_PROCESO = 2 AND CVE_ART = '${id}'
         `);
         if (!corteHoja)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = corteHoja.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente'});
 
     } catch (err) {
         console.log(err);
@@ -170,8 +168,10 @@ exports.corteMarco = async (req, res) => {
         let id = req.params.id
         let params = req.params.id
         let data = {
-            corte: params.corteM
+            corteM: params.corteM
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataCorteMarco = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -184,13 +184,13 @@ exports.corteMarco = async (req, res) => {
         if (!dataCorteMarco)
             return res.status(400).send({ message: 'Corte de vidrio no encontrado' });
 
-        if (parseInt(data.corte) > parseInt(returnDetalle.REALIZAR))
+        if (parseInt(data.corteM) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' });
 
         if (returnDetalle.REALIZADO == returnDetalle.REALIZAR)
             return res.status(400).send({ message: 'No puedes ingresar más datos' })
 
-        let result = parseInt(data.corte) + parseInt(returnDetalle.REALIZADO);
+        let result = parseInt(data.corteM) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
@@ -202,10 +202,7 @@ exports.corteMarco = async (req, res) => {
         if (!corteMarco)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = corteMarco.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);
@@ -218,8 +215,10 @@ exports.corteCedazo = async (req, res) => {
         let id = req.params.id
         let params = req.params.id
         let data = {
-            corte: params.corteC
+            corteC: params.corteC
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataCorteCedazo = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -232,13 +231,13 @@ exports.corteCedazo = async (req, res) => {
         if (!dataCorteCedazo)
             return res.status(400).send({ message: 'Corte de vidrio no encontrado' });
 
-        if (parseInt(data.corte) > parseInt(returnDetalle.REALIZAR))
+        if (parseInt(data.corteC) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' });
 
         if (returnDetalle.REALIZADO == returnDetalle.REALIZAR)
             return res.status(400).send({ message: 'No puedes ingresar más datos' })
 
-        let result = parseInt(data.corte) + parseInt(returnDetalle.REALIZADO);
+        let result = parseInt(data.corteC) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
@@ -250,10 +249,7 @@ exports.corteCedazo = async (req, res) => {
         if (!corteCedazo)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = corteCedazo.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);
@@ -271,8 +267,10 @@ exports.fusionHoja = async (req, res) => {
         let id = req.params.id
         let params = req.params.id
         let data = {
-            fusion: params.fusionH
+            fusionF: params.fusionH
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataFusionHoja = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -285,13 +283,13 @@ exports.fusionHoja = async (req, res) => {
         if (!dataFusionHoja)
             return res.status(400).send({ message: 'Corte de vidrio no encontrado' });
 
-        if (parseInt(data.fusion) > parseInt(returnDetalle.REALIZAR))
+        if (parseInt(data.fusionF) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' });
 
         if (returnDetalle.REALIZADO == returnDetalle.REALIZAR)
             return res.status(400).send({ message: 'No puedes ingresar más datos' })
 
-        let result = parseInt(data.fusion) + parseInt(returnDetalle.REALIZADO);
+        let result = parseInt(data.fusionF) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
@@ -302,10 +300,7 @@ exports.fusionHoja = async (req, res) => {
         if (!fusionHoja)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = fusionHoja.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);
@@ -318,8 +313,10 @@ exports.fusionMarco = async (req, res) => {
         let id = req.params.id
         let params = req.params.id
         let data = {
-            fusion: params.fusionM
+            fusionM: params.fusionM
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataCorteMarco = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -332,13 +329,13 @@ exports.fusionMarco = async (req, res) => {
         if (!dataCorteMarco)
             return res.status(400).send({ message: 'Corte de vidrio no encontrado' });
 
-        if (parseInt(data.fusion) > parseInt(returnDetalle.REALIZAR))
+        if (parseInt(data.fusionM) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' });
 
         if (returnDetalle.REALIZADO == returnDetalle.REALIZAR)
             return res.status(400).send({ message: 'No puedes ingresar más datos' })
 
-        let result = parseInt(data.fusion) + parseInt(returnDetalle.REALIZADO);
+        let result = parseInt(data.fusionM) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
@@ -350,10 +347,7 @@ exports.fusionMarco = async (req, res) => {
         if (!fusionMarco)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = fusionMarco.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);
@@ -366,8 +360,10 @@ exports.fusionCedazo = async (req, res) => {
         let id = req.params.id
         let params = req.params.id
         let data = {
-            fusion: params.fusionC
+            fusionC: params.fusionC
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataCorteCedazo = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -380,16 +376,16 @@ exports.fusionCedazo = async (req, res) => {
         if (!dataCorteCedazo)
             return res.status(400).send({ message: 'Corte de vidrio no encontrado' });
 
-        if (parseInt(data.fusion) > parseInt(returnDetalle.REALIZAR))
+        if (parseInt(data.fusionC) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' });
 
         if (returnDetalle.REALIZADO == returnDetalle.REALIZAR)
             return res.status(400).send({ message: 'No puedes ingresar más datos' })
 
-        let result = parseInt(data.fusion) + parseInt(returnDetalle.REALIZADO);
+        let result = parseInt(data.fusionC) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
-            return res.status(400).send({message:'La cantidad ingresada supera lo que se debe realizar'})
+            return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
 
         let fusionCedazo = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
@@ -398,10 +394,7 @@ exports.fusionCedazo = async (req, res) => {
         if (!fusionCedazo)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = fusionCedazo.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);
@@ -419,8 +412,10 @@ exports.limpiezaHoja = async (req, res) => {
         let id = req.params.id
         let params = req.params.id
         let data = {
-            limpieza: params.limpiezaH
+            limpiezaH: params.limpiezaH
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataCorteHoja = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -433,16 +428,16 @@ exports.limpiezaHoja = async (req, res) => {
         if (!dataCorteHoja)
             return res.status(400).send({ message: 'Corte de vidrio no encontrado' });
 
-        if (parseInt(data.limpieza) > parseInt(returnDetalle.REALIZAR))
+        if (parseInt(data.limpiezaH) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' });
 
         if (returnDetalle.REALIZADO == returnDetalle.REALIZAR)
             return res.status(400).send({ message: 'No puedes ingresar más datos' })
 
-        let result = parseInt(data.limpieza) + parseInt(returnDetalle.REALIZADO);
+        let result = parseInt(data.limpiezaH) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
-            return res.status(400).send({message:'La cantidad ingresada supera lo que se debe realizar'})
+            return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
 
         let limpiezaHoja = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
@@ -451,10 +446,7 @@ exports.limpiezaHoja = async (req, res) => {
         if (!limpiezaHoja)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = limpiezaHoja.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);
@@ -467,8 +459,10 @@ exports.limpiezaMarco = async (req, res) => {
         let id = req.params.id
         let params = req.params.id
         let data = {
-            limpieza: params.limpiezaM
+            limpiezaM: params.limpiezaM
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataCorteMarco = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -481,16 +475,16 @@ exports.limpiezaMarco = async (req, res) => {
         if (!dataCorteMarco)
             return res.status(400).send({ message: 'Corte de vidrio no encontrado' });
 
-        if (parseInt(data.limpieza) > parseInt(returnDetalle.REALIZAR))
+        if (parseInt(data.limpiezaM) > parseInt(returnDetalle.REALIZAR))
             return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' });
 
         if (returnDetalle.REALIZADO == returnDetalle.REALIZAR)
             return res.status(400).send({ message: 'No puedes ingresar más datos' })
 
-        let result = parseInt(data.limpieza) + parseInt(returnDetalle.REALIZADO);
+        let result = parseInt(data.limpiezaM) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
-            return res.status(400).send({message:'La cantidad ingresada supera lo que se debe realizar'})
+            return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
 
         let limpiezaMarco = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
@@ -499,10 +493,7 @@ exports.limpiezaMarco = async (req, res) => {
         if (!limpiezaMarco)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = limpiezaMarco.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);
@@ -517,6 +508,8 @@ exports.colocacionTela = async (req, res) => {
         let data = {
             colocacionTela: params.colocacionTela
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataColocacionTela = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -538,7 +531,7 @@ exports.colocacionTela = async (req, res) => {
         let result = parseInt(data.colocacionTela) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
-            return res.status(400).send({message:'La cantidad ingresada supera lo que se debe realizar'})
+            return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
         let colocacionTela = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
             WHERE WHERE ID_PROCESO = 10 AND CVE_ART = '${id}'
@@ -546,10 +539,7 @@ exports.colocacionTela = async (req, res) => {
         if (!colocacionTela)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = colocacionTela.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);
@@ -568,6 +558,8 @@ exports.corteBatiente = async (req, res) => {
         let data = {
             corteBatiente: params.corteBatiente
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataCorteBatiente = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -589,7 +581,7 @@ exports.corteBatiente = async (req, res) => {
         let result = parseInt(data.corteBatiente) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
-            return res.status(400).send({message:'La cantidad ingresada supera lo que se debe realizar'})
+            return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
 
         let corteBatiente = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
@@ -598,10 +590,7 @@ exports.corteBatiente = async (req, res) => {
         if (!corteBatiente)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = corteBatiente.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);
@@ -616,6 +605,8 @@ exports.colocacionBatiente = async (req, res) => {
         let data = {
             colocacionBatiente: params.colocacionBatiente
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataColocacionBatiente = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -637,7 +628,7 @@ exports.colocacionBatiente = async (req, res) => {
         let result = parseInt(data.colocacionBatiente) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
-            return res.status(400).send({message:'La cantidad ingresada supera lo que se debe realizar'})
+            return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
 
         let colocacionBatiente = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
@@ -646,10 +637,7 @@ exports.colocacionBatiente = async (req, res) => {
         if (!colocacionBatiente)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = colocacionBatiente.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);
@@ -664,6 +652,8 @@ exports.tapajambas = async (req, res) => {
         let data = {
             tapajambas: params.tapajambas
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataTapajambas = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -685,7 +675,7 @@ exports.tapajambas = async (req, res) => {
         let result = parseInt(data.tapajambas) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
-            return res.status(400).send({message:'La cantidad ingresada supera lo que se debe realizar'})
+            return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
 
         let tapajambas = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
@@ -694,10 +684,7 @@ exports.tapajambas = async (req, res) => {
         if (!tapajambas)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = tapajambas.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);
@@ -712,6 +699,8 @@ exports.reticula = async (req, res) => {
         let data = {
             reticula: params.reticula
         }
+        let msg = validateData(data);
+        if (msg) return res.status(400).send(msg);
 
         let dataReticula = await sqlConfig.VENTO.query(`
             SELECT REALIZAR, REALIZADO FROM TBL_DETALLEPROCESOS
@@ -733,7 +722,7 @@ exports.reticula = async (req, res) => {
         let result = parseInt(data.reticula) + parseInt(returnDetalle.REALIZADO);
 
         if (parseInt(result) > parseInt(returnDetalle.REALIZAR))
-            return res.status(400).send({message:'La cantidad ingresada supera lo que se debe realizar'})
+            return res.status(400).send({ message: 'La cantidad ingresada supera lo que se debe realizar' })
 
         let reticula = await sqlConfig.VENTO.query(`
             UPDATE TBL_DETALLEPROCESOS SET REALIZADO=${result}
@@ -742,10 +731,7 @@ exports.reticula = async (req, res) => {
         if (!reticula)
             return res.status(400).send({ message: 'Cantidad no ingresada' });
 
-        let arrayUpdate = reticula.recordsets
-        let secondArrayUpdate = arrayUpdate[0]
-        let returnDetalleUpdate = secondArrayUpdate[0];
-        return res.send({ message: 'Proceso guardado correctamente', returnDetalleUpdate });
+        return res.send({ message: 'Proceso guardado correctamente' });
 
     } catch (err) {
         console.log(err);

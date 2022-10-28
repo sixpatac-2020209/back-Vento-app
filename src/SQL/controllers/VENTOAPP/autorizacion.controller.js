@@ -147,10 +147,14 @@ exports.Autorizar = async (req, res) => {
             FECHA: dateString,
             ID_USUARIO: 99,
         }
+        let verifyAutorizacion = await sqlConfig.VENTO.query(`
+            SELECT * FROM TBL_AUTORIZACION WHERE CVE_ORDEN = ${id} AND ESTATUS = '1'
+        `);
+
 
         let autorizar = await sqlConfig.VENTO.query(`
-            UPDATE TBL_AUTORIZACION SET ESTATUS='${data.ESTATUS}', FECHA ='${data.FECHA}' 
-            WHERE CVE_ORDEN=${id}
+            UPDATE TBL_AUTORIZACION SET ESTATUS = '${data.ESTATUS}', FECHA = '${data.FECHA}' 
+            WHERE CVE_ORDEN = ${id}
         `);
 
         let arrayAuth = autorizar.recordsets;
