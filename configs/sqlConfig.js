@@ -4,7 +4,7 @@ const sql = require('mssql');
 var SAE80Empre02 = {
     user: 'sa',
     password: '.Admin123',
-    server: 'IT01\\SQLEXPRESS',
+    server: 'localhost',
     database: 'SAE80Empre02',
     options: {
         encrypt: true,
@@ -19,7 +19,7 @@ var SAE80Empre02 = {
 let VENTOAPP = {
     user: 'sa',
     password: '.Admin123',
-    server: 'IT01\\SQLEXPRESS',
+    server: 'localhost',
     database: 'VENTOAPP',
     options: {
         encrypt: true,
