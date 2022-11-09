@@ -136,6 +136,7 @@ exports.getImporteAutorizacion = async (req, res) => {
 
 exports.Autorizar = async (req, res) => {
     try {
+
         const hoy = Date.now();
         const newDate = new Date(hoy)
         let dateString = newDate.toLocaleDateString()
@@ -145,15 +146,11 @@ exports.Autorizar = async (req, res) => {
         let data = {
             ESTATUS: 1,
             FECHA: dateString,
-            ID_USUARIO: 99,
+            ID_USUARIO: params.ID_USUARIO,
         }
-        let verifyAutorizacion = await sqlConfig.VENTO.query(`
-            SELECT * FROM TBL_AUTORIZACION WHERE CVE_ORDEN = ${id} AND ESTATUS = '1'
-        `);
-
 
         let autorizar = await sqlConfig.VENTO.query(`
-            UPDATE TBL_AUTORIZACION SET ESTATUS = '${data.ESTATUS}', FECHA = '${data.FECHA}' 
+            UPDATE TBL_AUTORIZACION SET ESTATUS = '${data.ESTATUS}', FECHA = '${data.FECHA}' , ID_USUARIO = '${data.ID_USUARIO}'
             WHERE CVE_ORDEN = ${id}
         `);
 
@@ -169,7 +166,6 @@ exports.Autorizar = async (req, res) => {
     } catch (err) {
         console.log(err);
         return res.status(500).send({ message: 'Error al autorizar la orden.', err });
-
     }
 }
 
